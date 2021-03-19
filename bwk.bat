@@ -1,7 +1,7 @@
 doskey
 cls
 echo off
-..\\tasm.exe mlab1.asm
+..\\tasm.exe /l /zn mlab1.asm
 
 if errorlevel 1 goto edit
 
