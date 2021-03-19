@@ -1,4 +1,4 @@
-Turbo Assembler	 Version 2.51	     03/19/21 13:12:30	    Page 1
+Turbo Assembler	 Version 2.51	     03/19/21 13:14:33	    Page 1
 mlab1.asm
 
 
@@ -60,7 +60,7 @@ mlab1.asm
 1    55						 CALL  PUTSS
 1    56						 ENDM
 1    57
-Turbo Assembler	 Version 2.51	     03/19/21 13:12:30	    Page 2
+Turbo Assembler	 Version 2.51	     03/19/21 13:14:33	    Page 2
 mlab1.asm
 
 
@@ -122,7 +122,7 @@ mlab1.asm
     112	    008C  93 8B	9C 9F 8D 8E 82+	 ULSTU	 DB	 "УЛЬЯНОВСКИЙ ГОСУДАРСТВЕННЫЙ ТЕХНИЧЕСКИЙ УНИВЕРСИТЕТ",0
     113		  91 8A	88 89 20 83 8E+
     114		  91 93	84 80 90 91 92+
-Turbo Assembler	 Version 2.51	     03/19/21 13:12:30	    Page 3
+Turbo Assembler	 Version 2.51	     03/19/21 13:14:33	    Page 3
 mlab1.asm
 
 
@@ -184,7 +184,7 @@ mlab1.asm
 1   169	    001A  8B 0E	01A9r			 MOV   CX,   PAUSE+2
 1   170	    001E  E8 0000e			 CALL  PUTSS
     171						 ; ввод	имени
-Turbo Assembler	 Version 2.51	     03/19/21 13:12:30	    Page 4
+Turbo Assembler	 Version 2.51	     03/19/21 13:14:33	    Page 4
 mlab1.asm
 
 
@@ -246,7 +246,7 @@ mlab1.asm
 1   226	    0090  D1 F9				 SAR   CX,  1
 1   227	    0092  74 09	90 90			 JZ    ??0003
 1   228	    0096  B0 20			 ??0002: MOV   AL, ' '
-Turbo Assembler	 Version 2.51	     03/19/21 13:12:30	    Page 5
+Turbo Assembler	 Version 2.51	     03/19/21 13:14:33	    Page 5
 mlab1.asm
 
 
@@ -308,7 +308,7 @@ mlab1.asm
 1   283	    0118  33 C9				 XOR   CX,   CX
 1   284	    011A  33 D2				 XOR   DX,   DX
 1   285	    011C  33 C0				 XOR   AX,   AX
-Turbo Assembler	 Version 2.51	     03/19/21 13:12:30	    Page 6
+Turbo Assembler	 Version 2.51	     03/19/21 13:14:33	    Page 6
 mlab1.asm
 
 
@@ -370,7 +370,7 @@ mlab1.asm
     340						 DURAT		 ; подсчет затраченного	времени
 1   341	    0195  0F 31				 DB	 0Fh, 31h; Команда RDTSC чтения	счетчика тактов
 1   342	    0197  66| 5B			 POP	 EBX
-Turbo Assembler	 Version 2.51	     03/19/21 13:12:30	    Page 7
+Turbo Assembler	 Version 2.51	     03/19/21 13:14:33	    Page 7
 mlab1.asm
 
 
@@ -429,7 +429,7 @@ mlab1.asm
     394						 EXTRN	 SLEN:	 NEAR
     395						 EXTRN	 UTOA10: NEAR
     396						 END	 BEGIN
-Turbo Assembler	 Version 2.51	     03/19/21 13:12:30	    Page 8
+Turbo Assembler	 Version 2.51	     03/19/21 13:14:33	    Page 8
 Symbol Table
 
 
@@ -451,7 +451,7 @@ Symbol Name			  Type	 Value
 ??000B				  Near	 _TEXT:016D
 ??DATE				  Text	 "03/19/21"
 ??FILENAME			  Text	 "mlab1	  "
-??TIME				  Text	 "13:12:30"
+??TIME				  Text	 "13:14:33"
 ??VERSION			  Number 0205
 @@E				  Near	 _TEXT:0201
 @@L				  Near	 _TEXT:0027
@@ -491,7 +491,7 @@ LENS				  Byte	 DGROUP:0160
 MINIS				  Byte	 DGROUP:005E
 MOP				  Byte	 DGROUP:00DF
 PAUSE				  Word	 DGROUP:01A7
-Turbo Assembler	 Version 2.51	     03/19/21 13:12:30	    Page 9
+Turbo Assembler	 Version 2.51	     03/19/21 13:14:33	    Page 9
 Symbol Table
 
 

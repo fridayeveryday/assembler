@@ -5,25 +5,5 @@
  002E0H 004B9H 001DAH _DATA              DATA
  004C0H 006BFH 00200H STACK              STACK
 
-  Address         Publics by Name
-
- 0000:02D2       DILAY
- 0000:0233       GETCH
- 0000:0238       GETS
- 0000:022A       PUTC
- 0000:0208       PUTSS
- 0000:024C       SLEN
- 0000:0261       UTOA10
-
-  Address         Publics by Value
-
- 0000:0208       PUTSS
- 0000:022A       PUTC
- 0000:0233       GETCH
- 0000:0238       GETS
- 0000:024C       SLEN
- 0000:0261       UTOA10
- 0000:02D2       DILAY
-
 Program entry point at 0000:0000
 
