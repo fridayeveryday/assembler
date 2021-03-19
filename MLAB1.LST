@@ -1,0 +1,528 @@
+Turbo Assembler	 Version 2.51	     03/19/21 13:12:30	    Page 1
+mlab1.asm
+
+
+
+      1					 ;*******************************************************************************************
+      2					 ********
+      3					 ; MLAB1.ASM - учебный пример для выполнения
+      4					 ; лабораторной	работы N1 по машинно-ориентированному программированию
+      5					 ; 10.09.02: Негода В.Н.
+      6					 ;*******************************************************************************************
+      7					 ********
+      8	    0000				 .MODEL	SMALL
+      9	    0000				 .STACK	200h
+     10						 .386
+     11					 ;	 Используются декларации констант и макросов
+     12						 INCLUDE MLAB1.INC
+1    13					 ;*********************************************************
+1    14					 ; Константы для учебного примера лабораторной работы N	1  *
+1    15					 ; по МОП. 10.09.02: Негода В.Н.			   *
+1    16					 ;*********************************************************
+1    17
+1    18		  = 001B		 CHESC	 = 1Bh
+1    19		  = 000D		 CHCR	 = 13
+1    20		  = 003D		 CHSEP	 = '='
+1    21		  = 0060		 CHCOMMA = '`'
+1    22		  = 000A		 CHLF	 = 10
+1    23		  = 0021		 DOSFU	 = 21h
+1    24		  = 0002		 FUPUTC	 = 2
+1    25		  = 0008		 FUGETCH = 8
+1    26		  = 000A		 FUGETS	 = 0Ah
+1    27		  = 004C		 FUEXIT	 = 4Ch
+1    28		  = 0000		 PAUSE_L = 0000	 ; Младшее слово стартового значения паузы
+1    29		  = 0000		 PAUSE_H = 0	 ; Старшее слово
+1    30		  = 0012		 LENNUM	 = 18	 ; Число символов в строке десятичного числа
+1    31		  = 0009		 LENPACK = 9	 ; Упаковонное в два раза короче
+1    32
+1    33
+     34						 INCLUDE MLAB1.MAC
+1    35					 ;*********************************************************
+1    36					 ; Макросы для учебного	примера	лабораторной работы N 1	   *
+1    37					 ; по МОП. 10.09.02: Негода В.Н.			   *
+1    38					 ;*********************************************************
+1    39
+1    40					 ; Макрос вывода строки	LINE
+1    41					 PUTL	 MACRO LINE
+1    42						 LEA   SI,   LINE
+1    43						 XOR   CX,   CX
+1    44						 XOR   DX,   DX
+1    45						 XOR   AX,   AX
+1    46						 CALL  PUTSS
+1    47						 ENDM
+1    48
+1    49					 ; Макрос вывода строки	LINE с задержкой PAUSE
+1    50					 PUTLS	 MACRO LINE
+1    51						 XOR   AX,   AX
+1    52						 LEA   SI,   LINE
+1    53						 MOV   DX,   PAUSE
+1    54						 MOV   CX,   PAUSE+2
+1    55						 CALL  PUTSS
+1    56						 ENDM
+1    57
+Turbo Assembler	 Version 2.51	     03/19/21 13:12:30	    Page 2
+mlab1.asm
+
+
+
+1    58					 ; Как и PUTLS,	но с центрированием посередине
+1    59					 PUTLSC	 MACRO LINE
+1    60						 LOCAL LO, NOMARG
+1    61						 LEA   SI,   LINE
+1    62						 CALL  SLEN
+1    63						 MOV   CX, 80
+1    64						 SUB   CX, AX
+1    65						 SAR   CX,  1
+1    66						 JZ    NOMARG
+1    67					 LO:	 MOV   AL, ' '
+1    68						 CALL  PUTC
+1    69						 LOOP  LO
+1    70					 NOMARG: PUTLS LINE
+1    71						 ENDM
+1    72
+1    73					 ; Макрос фиксации начала измерения времени
+1    74					 ; Заносит в стек младшее слово	числа тактов системных часов
+1    75					 FIXTIME MACRO
+1    76						 DB	 0Fh, 31h; Команда RDTSC чтения	счетчика тактов
+1    77						 PUSH	 EDX
+1    78						 PUSH	 EAX
+1    79						 ENDM
+1    80
+1    81					 ; Макрос получения в <EDX,EAX>	числа тактов, прошедших	с последнего
+1    82					 ; момента фиксации времени. Извлекает продукт FIXTIME из стека
+1    83					 DURAT	 MACRO
+1    84						 DB	 0Fh, 31h; Команда RDTSC чтения	счетчика тактов
+1    85						 POP	 EBX
+1    86						 SUB	 EAX,	 EBX
+1    87						 POP	 EBX
+1    88						 SBB	 EDX,	 EBX
+1    89						 ENDM
+1    90
+1    91					 ; Макрос завершения программы
+1    92					 EXIT	 MACRO
+1    93						 MOV	 AH, FUEXIT
+1    94						 MOV	 AL, 0
+1    95						 INT	 DOSFU
+1    96						 ENDM
+1    97
+     98
+     99					 ; Декларации данных
+    100	    0000				 .DATA
+    101	    0000  4E*(3D) 00		 SLINE	 DB	 78 DUP	(CHSEP), 0
+    102	    004F  94 A0	AC A8 AB A8 EF+	 REQ	 DB	 "Фамилия И.О.:	",0FFh
+    103		  20 88	2E 8E 2E 3A 20+
+    104		  FF
+    105	    005E  8C 88	8D 88 91 92 85+	 MINIS	 DB	 "МИНИСТЕРСТВО ОБРАЗОВАНИЯ РОССИЙСКОЙ ФЕДЕРАЦИИ",0
+    106		  90 91	92 82 8E 20 8E+
+    107		  81 90	80 87 8E 82 80+
+    108		  8D 88	9F 20 90 8E 91+
+    109		  91 88	89 91 8A 8E 89+
+    110		  20 94	85 84 85 90 80+
+    111		  96 88	88 00
+    112	    008C  93 8B	9C 9F 8D 8E 82+	 ULSTU	 DB	 "УЛЬЯНОВСКИЙ ГОСУДАРСТВЕННЫЙ ТЕХНИЧЕСКИЙ УНИВЕРСИТЕТ",0
+    113		  91 8A	88 89 20 83 8E+
+    114		  91 93	84 80 90 91 92+
+Turbo Assembler	 Version 2.51	     03/19/21 13:12:30	    Page 3
+mlab1.asm
+
+
+
+    115		  82 85	8D 8D 9B 89 20+
+    116		  92 85	95 8D 88 97 85+
+    117		  91 8A	88 89 20 93 8D+
+    118		  88 82	85 90 91 88 92+
+    119		  85 92	00
+    120	    00C0  8A A0	E4 A5 A4 E0 A0+	 DEPT	 DB	 "Кафедра вычислительной техники",0
+    121		  20 A2	EB E7 A8 E1 AB+
+    122		  A8 E2	A5 AB EC AD AE+
+    123		  A9 20	E2 A5 E5 AD A8+
+    124		  AA A8	00
+    125	    00DF  8C A0	E8 A8 AD AD AE+	 MOP	 DB	 "Машинно-ориентированное программирование",0
+    126		  2D AE	E0 A8 A5 AD E2+
+    127		  A8 E0	AE A2 A0 AD AD+
+    128		  AE A5	20 AF E0 AE A3+
+    129		  E0 A0	AC AC A8 E0 AE+
+    130		  A2 A0	AD A8 A5 00
+    131	    0108  8B A0	A1 AE E0 A0 E2+	 LABR	 DB	 "Лабораторная работа N	1",0
+    132		  AE E0	AD A0 EF 20 E0+
+    133		  A0 A1	AE E2 A0 20 4E+
+    134		  20 31	00
+    135	    0120  87 A0	AC A5 A4 AB A8+	 REQ1	 DB	 "Замедлить(-),ускорить(+),выйти(ESC)? ",0FFh
+    136		  E2 EC	28 2D 29 2C E3+
+    137		  E1 AA	AE E0 A8 E2 EC+
+    138		  28 2B	29 2C A2 EB A9+
+    139		  E2 A8	28 45 53 43 29+
+    140		  3F 20	FF
+    141	    0146  82 E0	A5 AC EF 20 E0+	 TACTS	 DB	 "Время	работы в тактах: ",0FFh
+    142		  A0 A1	AE E2 EB 20 A2+
+    143		  20 E2	A0 AA E2 A0 E5+
+    144		  3A 20	FF
+    145	    015E  00			 EMPTYS	 DB	 0
+    146		  = 0046		 BUFLEN	= 70
+    147	    015F  46			 BUF	 DB	 BUFLEN
+    148	    0160  ??			 LENS	 DB	 ?
+    149	    0161  46*(00)		 SNAME	 DB	 BUFLEN	DUP (0)
+    150	    01A7  0000 0000		 PAUSE	 DW	 0, 0 ;	младшее	и старшее слова	задержки при выводе строки
+    151	    01AB  1B*(??) 00		 TI	 DB	 LENNUM+LENNUM/2 DUP(?), 0 ; строка вывода числа тактов
+    152										   ; запас для разделительных "`"
+    153
+    154					 ;========================= Программа =========================
+    155	    01C7				 .CODE
+    156					 ; Макрос заполнения строки LINE от позиции POS	содержимым CNT объектов,
+    157					 ; адресуемых адресом ADR при ширине поля вывода WFLD
+    158	    0000			 BEGIN	 LABEL	 NEAR
+    159						 ; инициализация сегментного регистра
+    160	    0000  B8 0000s			 MOV	 AX,	 @DATA
+    161	    0003  8E D8				 MOV	 DS,	 AX
+    162						 ; инициализация задержки
+    163	    0005  C7 06	01A7r 0000		 MOV	 PAUSE,	 PAUSE_L
+    164	    000B  C7 06	01A9r 0000		 MOV	 PAUSE+2,PAUSE_H
+    165						 PUTLS	 REQ	 ; запрос имени
+1   166	    0011  33 C0				 XOR   AX,   AX
+1   167	    0013  BE 004Fr			 LEA   SI,   REQ
+1   168	    0016  8B 16	01A7r			 MOV   DX,   PAUSE
+1   169	    001A  8B 0E	01A9r			 MOV   CX,   PAUSE+2
+1   170	    001E  E8 0000e			 CALL  PUTSS
+    171						 ; ввод	имени
+Turbo Assembler	 Version 2.51	     03/19/21 13:12:30	    Page 4
+mlab1.asm
+
+
+
+    172	    0021  BA 015Fr			 LEA	 DX,	 BUF
+    173	    0024  E8 0000e			 CALL	 GETS
+    174	    0027			 @@L:	 ; циклический процесс повторения вывода заставки
+    175						 ; вывод заставки
+    176						 ; ИЗМЕРЕНИЕ ВРЕМЕНИ НАЧАТЬ ЗДЕСЬ
+    177						 FIXTIME
+1   178	    0027  0F 31				 DB	 0Fh, 31h; Команда RDTSC чтения	счетчика тактов
+1   179	    0029  66| 52			 PUSH	 EDX
+1   180	    002B  66| 50			 PUSH	 EAX
+    181						 PUTL	 EMPTYS
+1   182	    002D  BE 015Er			 LEA   SI,   EMPTYS
+1   183	    0030  33 C9				 XOR   CX,   CX
+1   184	    0032  33 D2				 XOR   DX,   DX
+1   185	    0034  33 C0				 XOR   AX,   AX
+1   186	    0036  E8 0000e			 CALL  PUTSS
+    187						 PUTL	 SLINE	 ; разделительная черта
+1   188	    0039  BE 0000r			 LEA   SI,   SLINE
+1   189	    003C  33 C9				 XOR   CX,   CX
+1   190	    003E  33 D2				 XOR   DX,   DX
+1   191	    0040  33 C0				 XOR   AX,   AX
+1   192	    0042  E8 0000e			 CALL  PUTSS
+    193						 PUTL	 EMPTYS
+1   194	    0045  BE 015Er			 LEA   SI,   EMPTYS
+1   195	    0048  33 C9				 XOR   CX,   CX
+1   196	    004A  33 D2				 XOR   DX,   DX
+1   197	    004C  33 C0				 XOR   AX,   AX
+1   198	    004E  E8 0000e			 CALL  PUTSS
+    199						 PUTLSC	 MINIS	 ; первая
+1   200	    0051  BE 005Er			 LEA   SI,   MINIS
+1   201	    0054  E8 0000e			 CALL  SLEN
+1   202	    0057  B9 0050			 MOV   CX, 80
+1   203	    005A  2B C8				 SUB   CX, AX
+1   204	    005C  D1 F9				 SAR   CX,  1
+1   205	    005E  74 09	90 90			 JZ    ??0001
+1   206	    0062  B0 20			 ??0000: MOV   AL, ' '
+1   207	    0064  E8 0000e			 CALL  PUTC
+1   208	    0067  E2 F9				 LOOP  ??0000
+1   209	    0069			 ??0001: PUTLS MINIS
+2   210	    0069  33 C0				 XOR   AX,   AX
+2   211	    006B  BE 005Er			 LEA   SI,   MINIS
+2   212	    006E  8B 16	01A7r			 MOV   DX,   PAUSE
+2   213	    0072  8B 0E	01A9r			 MOV   CX,   PAUSE+2
+2   214	    0076  E8 0000e			 CALL  PUTSS
+    215						 PUTL	 EMPTYS
+1   216	    0079  BE 015Er			 LEA   SI,   EMPTYS
+1   217	    007C  33 C9				 XOR   CX,   CX
+1   218	    007E  33 D2				 XOR   DX,   DX
+1   219	    0080  33 C0				 XOR   AX,   AX
+1   220	    0082  E8 0000e			 CALL  PUTSS
+    221						 PUTLSC	 ULSTU	 ;  и
+1   222	    0085  BE 008Cr			 LEA   SI,   ULSTU
+1   223	    0088  E8 0000e			 CALL  SLEN
+1   224	    008B  B9 0050			 MOV   CX, 80
+1   225	    008E  2B C8				 SUB   CX, AX
+1   226	    0090  D1 F9				 SAR   CX,  1
+1   227	    0092  74 09	90 90			 JZ    ??0003
+1   228	    0096  B0 20			 ??0002: MOV   AL, ' '
+Turbo Assembler	 Version 2.51	     03/19/21 13:12:30	    Page 5
+mlab1.asm
+
+
+
+1   229	    0098  E8 0000e			 CALL  PUTC
+1   230	    009B  E2 F9				 LOOP  ??0002
+1   231	    009D			 ??0003: PUTLS ULSTU
+2   232	    009D  33 C0				 XOR   AX,   AX
+2   233	    009F  BE 008Cr			 LEA   SI,   ULSTU
+2   234	    00A2  8B 16	01A7r			 MOV   DX,   PAUSE
+2   235	    00A6  8B 0E	01A9r			 MOV   CX,   PAUSE+2
+2   236	    00AA  E8 0000e			 CALL  PUTSS
+    237						 PUTL	 EMPTYS
+1   238	    00AD  BE 015Er			 LEA   SI,   EMPTYS
+1   239	    00B0  33 C9				 XOR   CX,   CX
+1   240	    00B2  33 D2				 XOR   DX,   DX
+1   241	    00B4  33 C0				 XOR   AX,   AX
+1   242	    00B6  E8 0000e			 CALL  PUTSS
+    243						 PUTLSC	 DEPT	 ;   последующие
+1   244	    00B9  BE 00C0r			 LEA   SI,   DEPT
+1   245	    00BC  E8 0000e			 CALL  SLEN
+1   246	    00BF  B9 0050			 MOV   CX, 80
+1   247	    00C2  2B C8				 SUB   CX, AX
+1   248	    00C4  D1 F9				 SAR   CX,  1
+1   249	    00C6  74 09	90 90			 JZ    ??0005
+1   250	    00CA  B0 20			 ??0004: MOV   AL, ' '
+1   251	    00CC  E8 0000e			 CALL  PUTC
+1   252	    00CF  E2 F9				 LOOP  ??0004
+1   253	    00D1			 ??0005: PUTLS DEPT
+2   254	    00D1  33 C0				 XOR   AX,   AX
+2   255	    00D3  BE 00C0r			 LEA   SI,   DEPT
+2   256	    00D6  8B 16	01A7r			 MOV   DX,   PAUSE
+2   257	    00DA  8B 0E	01A9r			 MOV   CX,   PAUSE+2
+2   258	    00DE  E8 0000e			 CALL  PUTSS
+    259						 PUTL	 EMPTYS
+1   260	    00E1  BE 015Er			 LEA   SI,   EMPTYS
+1   261	    00E4  33 C9				 XOR   CX,   CX
+1   262	    00E6  33 D2				 XOR   DX,   DX
+1   263	    00E8  33 C0				 XOR   AX,   AX
+1   264	    00EA  E8 0000e			 CALL  PUTSS
+    265						 PUTLSC	 MOP	 ;    строки
+1   266	    00ED  BE 00DFr			 LEA   SI,   MOP
+1   267	    00F0  E8 0000e			 CALL  SLEN
+1   268	    00F3  B9 0050			 MOV   CX, 80
+1   269	    00F6  2B C8				 SUB   CX, AX
+1   270	    00F8  D1 F9				 SAR   CX,  1
+1   271	    00FA  74 09	90 90			 JZ    ??0007
+1   272	    00FE  B0 20			 ??0006: MOV   AL, ' '
+1   273	    0100  E8 0000e			 CALL  PUTC
+1   274	    0103  E2 F9				 LOOP  ??0006
+1   275	    0105			 ??0007: PUTLS MOP
+2   276	    0105  33 C0				 XOR   AX,   AX
+2   277	    0107  BE 00DFr			 LEA   SI,   MOP
+2   278	    010A  8B 16	01A7r			 MOV   DX,   PAUSE
+2   279	    010E  8B 0E	01A9r			 MOV   CX,   PAUSE+2
+2   280	    0112  E8 0000e			 CALL  PUTSS
+    281						 PUTL	 EMPTYS
+1   282	    0115  BE 015Er			 LEA   SI,   EMPTYS
+1   283	    0118  33 C9				 XOR   CX,   CX
+1   284	    011A  33 D2				 XOR   DX,   DX
+1   285	    011C  33 C0				 XOR   AX,   AX
+Turbo Assembler	 Version 2.51	     03/19/21 13:12:30	    Page 6
+mlab1.asm
+
+
+
+1   286	    011E  E8 0000e			 CALL  PUTSS
+    287						 PUTLSC	 LABR	 ;     заставки
+1   288	    0121  BE 0108r			 LEA   SI,   LABR
+1   289	    0124  E8 0000e			 CALL  SLEN
+1   290	    0127  B9 0050			 MOV   CX, 80
+1   291	    012A  2B C8				 SUB   CX, AX
+1   292	    012C  D1 F9				 SAR   CX,  1
+1   293	    012E  74 09	90 90			 JZ    ??0009
+1   294	    0132  B0 20			 ??0008: MOV   AL, ' '
+1   295	    0134  E8 0000e			 CALL  PUTC
+1   296	    0137  E2 F9				 LOOP  ??0008
+1   297	    0139			 ??0009: PUTLS LABR
+2   298	    0139  33 C0				 XOR   AX,   AX
+2   299	    013B  BE 0108r			 LEA   SI,   LABR
+2   300	    013E  8B 16	01A7r			 MOV   DX,   PAUSE
+2   301	    0142  8B 0E	01A9r			 MOV   CX,   PAUSE+2
+2   302	    0146  E8 0000e			 CALL  PUTSS
+    303						 PUTL	 EMPTYS
+1   304	    0149  BE 015Er			 LEA   SI,   EMPTYS
+1   305	    014C  33 C9				 XOR   CX,   CX
+1   306	    014E  33 D2				 XOR   DX,   DX
+1   307	    0150  33 C0				 XOR   AX,   AX
+1   308	    0152  E8 0000e			 CALL  PUTSS
+    309						 ; приветствие
+    310						 PUTLSC	 SNAME	 ; ФИО студента
+1   311	    0155  BE 0161r			 LEA   SI,   SNAME
+1   312	    0158  E8 0000e			 CALL  SLEN
+1   313	    015B  B9 0050			 MOV   CX, 80
+1   314	    015E  2B C8				 SUB   CX, AX
+1   315	    0160  D1 F9				 SAR   CX,  1
+1   316	    0162  74 09	90 90			 JZ    ??000B
+1   317	    0166  B0 20			 ??000A: MOV   AL, ' '
+1   318	    0168  E8 0000e			 CALL  PUTC
+1   319	    016B  E2 F9				 LOOP  ??000A
+1   320	    016D			 ??000B: PUTLS SNAME
+2   321	    016D  33 C0				 XOR   AX,   AX
+2   322	    016F  BE 0161r			 LEA   SI,   SNAME
+2   323	    0172  8B 16	01A7r			 MOV   DX,   PAUSE
+2   324	    0176  8B 0E	01A9r			 MOV   CX,   PAUSE+2
+2   325	    017A  E8 0000e			 CALL  PUTSS
+    326						 PUTL	 EMPTYS
+1   327	    017D  BE 015Er			 LEA   SI,   EMPTYS
+1   328	    0180  33 C9				 XOR   CX,   CX
+1   329	    0182  33 D2				 XOR   DX,   DX
+1   330	    0184  33 C0				 XOR   AX,   AX
+1   331	    0186  E8 0000e			 CALL  PUTSS
+    332						 ; разделительная черта
+    333						 PUTL	 SLINE
+1   334	    0189  BE 0000r			 LEA   SI,   SLINE
+1   335	    018C  33 C9				 XOR   CX,   CX
+1   336	    018E  33 D2				 XOR   DX,   DX
+1   337	    0190  33 C0				 XOR   AX,   AX
+1   338	    0192  E8 0000e			 CALL  PUTSS
+    339						 ; ИЗМЕРЕНИЕ ВРЕМЕНИ ЗАКОНЧИТЬ ЗДЕСЬ
+    340						 DURAT		 ; подсчет затраченного	времени
+1   341	    0195  0F 31				 DB	 0Fh, 31h; Команда RDTSC чтения	счетчика тактов
+1   342	    0197  66| 5B			 POP	 EBX
+Turbo Assembler	 Version 2.51	     03/19/21 13:12:30	    Page 7
+mlab1.asm
+
+
+
+1   343	    0199  66| 2B C3			 SUB	 EAX,	 EBX
+1   344	    019C  66| 5B			 POP	 EBX
+1   345	    019E  66| 1B D3			 SBB	 EDX,	 EBX
+    346						 ; Преобразование числа	тиков в	строку и вывод
+    347	    01A1  BF 01ABr			 LEA	 DI,	 TI
+    348	    01A4  E8 0000e			 CALL	 UTOA10
+    349						 PUTL	 TACTS
+1   350	    01A7  BE 0146r			 LEA   SI,   TACTS
+1   351	    01AA  33 C9				 XOR   CX,   CX
+1   352	    01AC  33 D2				 XOR   DX,   DX
+1   353	    01AE  33 C0				 XOR   AX,   AX
+1   354	    01B0  E8 0000e			 CALL  PUTSS
+    355						 PUTL	 TI	 ; вывод числа тактов
+1   356	    01B3  BE 01ABr			 LEA   SI,   TI
+1   357	    01B6  33 C9				 XOR   CX,   CX
+1   358	    01B8  33 D2				 XOR   DX,   DX
+1   359	    01BA  33 C0				 XOR   AX,   AX
+1   360	    01BC  E8 0000e			 CALL  PUTSS
+    361						 ; обработка команды
+    362						 PUTL	 REQ1
+1   363	    01BF  BE 0120r			 LEA   SI,   REQ1
+1   364	    01C2  33 C9				 XOR   CX,   CX
+1   365	    01C4  33 D2				 XOR   DX,   DX
+1   366	    01C6  33 C0				 XOR   AX,   AX
+1   367	    01C8  E8 0000e			 CALL  PUTSS
+    368	    01CB  E8 0000e			 CALL	 GETCH
+    369	    01CE  3C 2D				 CMP	 AL,	 '-'	; удлиннять задержку?
+    370	    01D0  75 09	90 90			 JNE	 CMINUS
+    371	    01D4  FF 06	01A9r			 INC	 PAUSE+2	; добавить 65536 мкс
+    372	    01D8  E9 FE4C			 JMP	 @@L
+    373	    01DB  3C 2B			 CMINUS: CMP	 AL,	 '+'	; укорачивать задержку?
+    374	    01DD  75 12	90 90			 JNE	 CEXIT
+    375	    01E1  83 3E	01A9r 00		 CMP	 WORD PTR PAUSE+2, 0
+    376	    01E6  74 06	90 90			 JE	 BACK
+    377	    01EA  FF 0E	01A9r			 DEC	 PAUSE+2	; убавить 65536	мкс
+    378	    01EE  E9 FE36		 BACK:	 JMP	 @@L
+    379	    01F1  3C 1B			 CEXIT:	 CMP	 AL,	 CHESC
+    380	    01F3  74 0C	90 90			 JE	 @@E
+    381	    01F7  84 C0				 TEST	 AL,	 AL
+    382	    01F9  75 F3				 JNE	 BACK
+    383	    01FB  E8 0000e			 CALL	 GETCH
+    384	    01FE  E9 FE26			 JMP	 @@L
+    385						 ; Выход из программы
+    386	    0201			 @@E:	 EXIT
+1   387	    0201  B4 4C				 MOV	 AH, FUEXIT
+1   388	    0203  B0 00				 MOV	 AL, 0
+1   389	    0205  CD 21				 INT	 DOSFU
+    390						 EXTRN	 PUTSS:	 NEAR
+    391						 EXTRN	 PUTC:	 NEAR
+    392						 EXTRN	 GETCH:	 NEAR
+    393						 EXTRN	 GETS:	 NEAR
+    394						 EXTRN	 SLEN:	 NEAR
+    395						 EXTRN	 UTOA10: NEAR
+    396						 END	 BEGIN
+Turbo Assembler	 Version 2.51	     03/19/21 13:12:30	    Page 8
+Symbol Table
+
+
+
+
+Symbol Name			  Type	 Value
+
+??0000				  Near	 _TEXT:0062
+??0001				  Near	 _TEXT:0069
+??0002				  Near	 _TEXT:0096
+??0003				  Near	 _TEXT:009D
+??0004				  Near	 _TEXT:00CA
+??0005				  Near	 _TEXT:00D1
+??0006				  Near	 _TEXT:00FE
+??0007				  Near	 _TEXT:0105
+??0008				  Near	 _TEXT:0132
+??0009				  Near	 _TEXT:0139
+??000A				  Near	 _TEXT:0166
+??000B				  Near	 _TEXT:016D
+??DATE				  Text	 "03/19/21"
+??FILENAME			  Text	 "mlab1	  "
+??TIME				  Text	 "13:12:30"
+??VERSION			  Number 0205
+@@E				  Near	 _TEXT:0201
+@@L				  Near	 _TEXT:0027
+@CODE				  Text	 _TEXT
+@CODESIZE			  Text	 0
+@CPU				  Text	 0D0FH
+@CURSEG				  Text	 _TEXT
+@DATA				  Text	 DGROUP
+@DATASIZE			  Text	 0
+@FILENAME			  Text	 MLAB1
+@MODEL				  Text	 2
+@WORDSIZE			  Text	 2
+BACK				  Near	 _TEXT:01EE
+BEGIN				  Near	 _TEXT:0000
+BUF				  Byte	 DGROUP:015F
+BUFLEN				  Number 0046
+CEXIT				  Near	 _TEXT:01F1
+CHCOMMA				  Number 0060
+CHCR				  Number 000D
+CHESC				  Number 001B
+CHLF				  Number 000A
+CHSEP				  Number 003D
+CMINUS				  Near	 _TEXT:01DB
+DEPT				  Byte	 DGROUP:00C0
+DOSFU				  Number 0021
+EMPTYS				  Byte	 DGROUP:015E
+FUEXIT				  Number 004C
+FUGETCH				  Number 0008
+FUGETS				  Number 000A
+FUPUTC				  Number 0002
+GETCH				  Near	 _TEXT:---- Extern
+GETS				  Near	 _TEXT:---- Extern
+LABR				  Byte	 DGROUP:0108
+LENNUM				  Number 0012
+LENPACK				  Number 0009
+LENS				  Byte	 DGROUP:0160
+MINIS				  Byte	 DGROUP:005E
+MOP				  Byte	 DGROUP:00DF
+PAUSE				  Word	 DGROUP:01A7
+Turbo Assembler	 Version 2.51	     03/19/21 13:12:30	    Page 9
+Symbol Table
+
+
+
+PAUSE_H				  Number 0000
+PAUSE_L				  Number 0000
+PUTC				  Near	 _TEXT:---- Extern
+PUTSS				  Near	 _TEXT:---- Extern
+REQ				  Byte	 DGROUP:004F
+REQ1				  Byte	 DGROUP:0120
+SLEN				  Near	 _TEXT:---- Extern
+SLINE				  Byte	 DGROUP:0000
+SNAME				  Byte	 DGROUP:0161
+TACTS				  Byte	 DGROUP:0146
+TI				  Byte	 DGROUP:01AB
+ULSTU				  Byte	 DGROUP:008C
+UTOA10				  Near	 _TEXT:---- Extern
+
+Macro Name
+
+DURAT
+EXIT
+FIXTIME
+PUTL
+PUTLS
+PUTLSC
+
+Groups & Segments		  Bit Size Align  Combine Class
+
+DGROUP				  Group
+  STACK				  16  0200 Para	  Stack	  STACK
+  _DATA				  16  01C7 Word	  Public  DATA
+_TEXT				  16  0207 Word	  Public  CODE
+

@@ -1,0 +1,15 @@
+
+ Start  Stop   Length Name               Class
+
+ 00000H 00206H 00207H _TEXT              CODE
+ 00210H 003D6H 001C7H _DATA              DATA
+ 003E0H 005DFH 00200H STACK              STACK
+
+Error: Undefined symbol PUTSS in module MLAB1.ASM
+Error: Undefined symbol GETS in module MLAB1.ASM
+Error: Undefined symbol SLEN in module MLAB1.ASM
+Error: Undefined symbol PUTC in module MLAB1.ASM
+Error: Undefined symbol UTOA10 in module MLAB1.ASM
+Error: Undefined symbol GETCH in module MLAB1.ASM
+Program entry point at 0000:0000
+
