@@ -3,18 +3,20 @@
 ; по МОП. 10.09.02: Негода В.Н.                           *
 ;*********************************************************
 
-; Макрос вывода строки LINE 
+; Макрос вывода строки LINE
 PUTL    MACRO LINE
+  PUSH EAX
         LEA   SI,   LINE
 	XOR   CX,   CX
 	XOR   DX,   DX
-	XOR   AX,   AX	
+	XOR   AX,   AX
         CALL  PUTSS
+  POP EAX
         ENDM
 
 ; Макрос вывода строки LINE с задержкой PAUSE
 PUTLS   MACRO LINE
-	XOR   AX,   AX	
+	XOR   AX,   AX
         LEA   SI,   LINE
 	MOV   DX,   PAUSE
 	MOV   CX,   PAUSE+2
@@ -29,7 +31,7 @@ PUTLSC  MACRO LINE
 	MOV   CX, 80
 	SUB   CX, AX
 	SAR   CX,  1
-	JZ    NOMARG	
+	JZ    NOMARG
 LO:	MOV   AL, ' '
 	CALL  PUTC
 	LOOP  LO
@@ -57,7 +59,6 @@ DURAT	MACRO
 ; Макрос завершения программы
 EXIT	MACRO
         MOV     AH, FUEXIT
-        MOV     AL, 0  
+        MOV     AL, 0
         INT     DOSFU
         ENDM
-	
