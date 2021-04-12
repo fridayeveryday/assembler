@@ -35,7 +35,9 @@ X DD 0
 Y DD 0
 Z DD 0
 D DB '---------------------------------'
-ERROR_NUM_STR DB 'ERROR IN INPUTED NUMBER, RECHELK IT', 0
+INPUT_X_STR DB 'PLEASE ENTER A BINARY X', 0
+INPUT_Y_STR DB 'PLEASE ENTER A BINARY Y', 0
+ERROR_NUM_STR DB 'ERROR IN INPUTED NUMBER, RECHEK IT', 0
 
 
 ;========================= Программа =========================
@@ -116,58 +118,7 @@ CEXIT:	CMP	AL,	CHESC
 	JMP	@@L
 
 
-  ; RESULT IN EAX , STRING WITH BINARY NUMBER IN MYBUFF
-  READ_NUM PROC NEAR
-    LEA EDX, [MYBUF]
-    CALL GETS
-    xor eax, eax
-    xor ebx, ebx
-    ADD EDX, 1
-    MOV CL, [EDX]
-    ; ADD CL, 48
-    ; MOV AL, CL
-    ; CALL PUTC
-    ; SUB CL, 48
-    ADD EDX, 1
-    l1:
-       mov bl, [EDX]
-       sub bl, 48
-       CMP BL, 0
-       JE CONTINUE
-       CMP BL, 1
-       JNE ERROR_NUM
-       CONTINUE:
-         add al, bl
-         ; CALL PUTC
-         shl al, 1
-         inc EDX
-         loop l1
-    shr al,1
-    RET
-  READ_NUM ENDP
 
-  ; WRITE DEC NUMBER FROM EAX
-  PRINT_DEC PROC NEAR
-    PUSH EAX
-    PUTL EMPTYS
-    POP EAX
-    MOV EBX, 10
-    XOR ECX, ECX
-    DIVISION:
-      XOR EDX, EDX
-      DIV EBX
-      ADD EDX, 48
-      push EDX
-      ADD ECX, 1
-      CMP EAX, 0
-      JG DIVISION
-    PRINT:
-      XOR EAX, EAX
-      POP EAX
-      CALL PUTC
-      LOOP PRINT
-      RET
-    PRINT_DEC ENDP
 
 
 MY_PROG:
@@ -186,20 +137,92 @@ MY_PROG:
   ; LEA ESI, [MYBUF]
   ; CALL READ_NUM
   PUTL	EMPTYS
-  XOR EAX, EAX
-  MOV EAX, 462342
-
+  LEA ESI, [INPUT_X_STR]
+  CALL PUTSS
   CALL READ_NUM
+  ;SEND EAAX VALUE TO X VARIABLE
+  LEA ESI, [X]
+  MOV ESI, EAX
+  PUTL	EMPTYS
+
+  LEA ESI, [INPUT_Y_STR]
+  CALL PUTSS
+  CALL READ_NUM
+  ;SEND EAAX VALUE TO X VARIABLE
+  LEA ESI, [Y]
+  MOV ESI, EAX
   CALL PRINT_DEC
   JMP @@E
 
 ERROR_NUM:
-  PUTL EMPTYS
+  LEA ESI, ERROR_NUM_STR
+  CALL OUTPUT
+  JMP @@E
+
+
+; ESI - ADDRES OF STRING
+OUTPUT PROC NEAR
+  ; PUTL EMPTYS
+  XOR EAX, EAX
   XOR EDX, EDX
   XOR ECX, ECX
-  LEA ESI, ERROR_NUM_STR
   CALL PUTSS
+  ; PUTL EMPTYS
+  RET
+OUTPUT ENDP
 
+; RESULT IN EAX , STRING WITH BINARY NUMBER IN MYBUFF
+READ_NUM PROC NEAR
+  LEA EDX, [MYBUF]
+  CALL GETS
+  xor eax, eax
+  xor ebx, ebx
+  ADD EDX, 1
+  MOV CL, [EDX]
+  ; ADD CL, 48
+  ; MOV AL, CL
+  ; CALL PUTC
+  ; SUB CL, 48
+  ADD EDX, 1
+  l1:
+     mov bl, [EDX]
+     sub bl, 48
+     CMP BL, 0
+     JE CONTINUE
+     CMP BL, 1
+     JNE ERROR_NUM
+     CONTINUE:
+       add al, bl
+       ; CALL PUTC
+       shl al, 1
+       inc EDX
+       loop l1
+  shr al,1
+  RET
+READ_NUM ENDP
+
+; WRITE DEC NUMBER FROM EAX
+PRINT_DEC PROC NEAR
+  PUSH EAX
+  PUTL EMPTYS
+  POP EAX
+  MOV EBX, 10
+  XOR ECX, ECX
+  DIVISION:
+    XOR EDX, EDX
+    DIV EBX
+    ADD EDX, 48
+    push EDX
+    ADD ECX, 1
+    CMP EAX, 0
+    JG DIVISION
+  PRINT:
+    XOR EAX, EAX
+    POP EAX
+    CALL PUTC
+    LOOP PRINT
+    RET
+  PRINT_DEC ENDP
 
 	; Выход из программы
 @@E:	EXIT
