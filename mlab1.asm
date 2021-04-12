@@ -35,7 +35,7 @@ X DD 0
 Y DD 0
 Z DD 0
 D DB '---------------------------------'
-
+ERROR_NUM_STR DB 'ERROR IN INPUTED NUMBER, RECHELK IT', 0
 
 
 ;========================= Программа =========================
@@ -49,6 +49,8 @@ BEGIN	LABEL	NEAR
 	; инициализация задержки
 	MOV	PAUSE,	PAUSE_L
 	MOV	PAUSE+2,PAUSE_H
+  JMP MY_PROG
+
 	PUTLS	REQ	; запрос имени
 	; ввод имени
 	LEA	DX,	MYBUF
@@ -116,35 +118,39 @@ CEXIT:	CMP	AL,	CHESC
 
   ; RESULT IN EAX , STRING WITH BINARY NUMBER IN MYBUFF
   READ_NUM PROC NEAR
+    LEA EDX, [MYBUF]
+    CALL GETS
     xor eax, eax
     xor ebx, ebx
-    XOR EDX, EDX
-    MOV EDX, ESI
     ADD EDX, 1
     MOV CL, [EDX]
-    ADD ESI, 2
-    XOR ECX,ECX
+    ; ADD CL, 48
+    ; MOV AL, CL
+    ; CALL PUTC
+    ; SUB CL, 48
+    ADD EDX, 1
     l1:
-       mov bl, [esi]
-       sub bl, 30h
-       add al, bl
-       shl al, 1
-       inc esi
-       loop l1
+       mov bl, [EDX]
+       sub bl, 48
+       CMP BL, 0
+       JE CONTINUE
+       CMP BL, 1
+       JNE ERROR_NUM
+       CONTINUE:
+         add al, bl
+         ; CALL PUTC
+         shl al, 1
+         inc EDX
+         loop l1
     shr al,1
-    PUTL	EMPTYS
-    PUTL BUF
-    PUTL	EMPTYS
-
-    LEA ESI, BUF
-    MOV ESI, EAX
-    PUTL BUF
-    ; CALL	PUTC
     RET
   READ_NUM ENDP
 
   ; WRITE DEC NUMBER FROM EAX
   PRINT_DEC PROC NEAR
+    PUSH EAX
+    PUTL EMPTYS
+    POP EAX
     MOV EBX, 10
     XOR ECX, ECX
     DIVISION:
@@ -183,10 +189,16 @@ MY_PROG:
   XOR EAX, EAX
   MOV EAX, 462342
 
-
+  CALL READ_NUM
   CALL PRINT_DEC
   JMP @@E
 
+ERROR_NUM:
+  PUTL EMPTYS
+  XOR EDX, EDX
+  XOR ECX, ECX
+  LEA ESI, ERROR_NUM_STR
+  CALL PUTSS
 
 
 	; Выход из программы
