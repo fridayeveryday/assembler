@@ -1,15 +1,19 @@
-.8086
-.model small
-.stack 10
+.MODEL SMALL
+.STACK 200h
+.386
 .data
 str1 db "hello world$"
-a dd 56781234h
+a dd 123
 .code
-mov ax,@data
-mov ds,ax
+mov eax,@data
+mov ds, eax
+mov ebx, 4
+mov ecx, 5
+add ebx, ecx
 mov ah,09h
-mov dx,offset str1
+;mov dx,offset str1
+mov edx, ebx
 int 21h
-mov ax,4c00h
+mov eax,4c00h
 int 21h
 end

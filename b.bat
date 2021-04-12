@@ -1,5 +1,6 @@
 doskey
 cls
+keyb ru 866
 echo off
 ..\\tasm.exe /zi /l mlab1.asm
 

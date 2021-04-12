@@ -1,7 +1,8 @@
 doskey
 cls
+keyb ru 866
 echo off
-..\\tasm.exe /l /zn mlab1.asm
+..\\tasm.exe  mlab1.asm
 
 if errorlevel 1 goto edit
 
