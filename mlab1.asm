@@ -56,14 +56,14 @@ BEGIN	LABEL	NEAR
 
 	PUTLS	REQ	; § ―ΰ®α ¨¬¥­¨
 	; ΆΆ®¤ ¨¬¥­¨
-	LEA	DX,	MYBUF
-	CALL	GETS
-  XOR ECX,ECX
-  XOR EAX,EAX
-  MOV CL, MYBUF[1]
-  MOV AL, CL
-  ADD AL, 48
-  CALL PUTC
+	; LEA	DX,	MYBUF
+	; CALL	GETS
+  ; XOR ECX,ECX
+  ; XOR EAX,EAX
+  ; MOV CL, MYBUF[1]
+  ; MOV AL, CL
+  ; ADD AL, 48
+  ; CALL PUTC
 
 
 @@L:	; ζ¨ª«¨η¥αª¨© ―ΰ®ζ¥αα ―®Άβ®ΰ¥­¨ο ΆλΆ®¤  § αβ Άª¨
@@ -142,6 +142,15 @@ MY_PROG:
   PUTL EMPTYS
 
   MOV EAX, X
+  CALL PRINT_DEC
+  PUTL EMPTYS
+  
+
+
+
+  JMP @@E
+
+  MOV EAX, X
   AND EAX, 11110b ;¬ αª  ­  ε1-ε4 ΅¨β 
 
   ;‘€‚’ •1-•4 ’€ € ‘’‚…’‘’‚… ‹† ‡ ’€‹—›•
@@ -177,11 +186,44 @@ FALSE:
   MOV Z, EAX
 
 CHANGE_Z:
+  ; ‡……… 3 ’€
   MOV EAX, Z
+  XOR EAX, 1000b ; ‚…‘ 3 ’€
+  ;----------------------------------------
+  ; ‡……… 2 ’€
   MOV EBX, EAX
-  AND EAX, 1000b
-  CMP EAX, 0
-  
+  AND EBX, 100b  ; ¬ αª  3 ΅¨β 
+  SHR EBX, 2    ; ‚ EBX ‡€—…… ’€ Z2
+
+  MOV ECX, EAX
+  AND ECX, 10000000000000000000b   ; ¬ αª  19 ΅¨β 
+  SHR ECX, 19   ; ‚ ECX ‡€—…… ’€ Z19
+
+  OR EBX, ECX  ; ‚›—‘‹…… Z2|=Z19
+  SHL EBX, 2    ; ‚›„‚ƒ€… ‡€—…… …€– ‚ ‡– Z2
+  OR EAX, EBX  ; ‡€…‘…… …‡“‹’€’€ EBX ‚ EAX
+  ;----------------------------------------
+  ;‡……… 7 ’€
+
+  MOV EBX, EAX
+  AND EBX, 10000000b    ; €‘€ 7 ’€
+  SHR EBX, 7    ; ‚ EBX ‡€—…… ’€ Z7
+
+  MOV ECX, EAX
+  AND ECX, 100000000b    ; €‘€ 8 ’€
+  SHR ECX, 8    ; ‚ EBX ‡€—…… ’€ Z8
+
+  AND EBX, ECX  ; ‚›—‘‹…… Z7&=Z8
+  SHL EBX, 7    ; ‚›„‚ƒ€… ‡€—…… …€– ‚ ‡– Z7
+  OR EAX, EBX  ; ‡€…‘…… …‡“‹’€’€ EBX ‚ EAX
+
+  MOV Z, EAX
+  PUTL EMPTYS
+  MOV EAX, Z
+  CALL PRINT_DEC
+  PUTL EMPTYS
+
+
 
 
 
@@ -193,6 +235,10 @@ ERROR_NUM:
   JMP @@E
 
 
+CAHNGE_Z3 PROC NEAR
+  XOR EAX, 1000b
+  RET
+CAHNGE_Z3 ENDP
 ; ESI - ADDRES OF STRING
 OUTPUT PROC NEAR
   ; PUTL EMPTYS
@@ -254,6 +300,29 @@ PRINT_DEC PROC NEAR
     LOOP PRINT
     RET
   PRINT_DEC ENDP
+
+  ; WRITE DEC NUMBER FROM EAX
+  PRINT_BIN PROC NEAR
+    PUSH EAX
+    PUTL EMPTYS
+    POP EAX
+    MOV EBX, 2
+    XOR ECX, ECX
+    DIVISION:
+      XOR EDX, EDX
+      DIV EBX
+      ADD EDX, 48
+      push EDX
+      ADD ECX, 1
+      CMP EAX, 0
+      JG DIVISION
+    PRINT:
+      XOR EAX, EAX
+      POP EAX
+      CALL PUTC
+      LOOP PRINT
+      RET
+    PRINT_BIN ENDP
 
 	; ‚λε®¤ ¨§ ―ΰ®£ΰ ¬¬λ
 @@E:	EXIT
