@@ -12,6 +12,9 @@
 
 ; Декларации данных
         .DATA
+X DD 0
+Y DD 0
+Z DD 0
 SLINE	DB	78 DUP (CHSEP), 0
 REQ	DB	"Фамилия И.О.: ",0FFh
 MINIS	DB	"МИНИСТЕРСТВО ОБРАЗОВАНИЯ РОССИЙСКОЙ ФЕДЕРАЦИИ",0
@@ -27,13 +30,11 @@ BUF	DB	BUFLEN
 LENS	DB	?
 SNAME	DB	BUFLEN DUP (0)
 PAUSE	DW	0, 0 ; младшее и старшее слова задержки при выводе строки
+
 TI	DB	LENNUM+LENNUM/2 DUP(?), 0 ; строка вывода числа тактов
                                           ; запас для разделительных "`"
 
 MYBUF DB BUFLEN
-X DD 0
-Y DD 0
-Z DD 0
 D DB '---------------------------------', 0
 INPUT_X_STR DB 'PLEASE ENTER A BINARY X', 0
 INPUT_Y_STR DB 'PLEASE ENTER A BINARY Y', 0
@@ -144,54 +145,68 @@ MY_PROG:
   ; PUTL EMPTYS
   ; CALL PRINT_DEC
 
+ ;ввод числа Х
   PUTL	EMPTYS
-  LEA ESI, [INPUT_X_STR]
+  LEA ESI, INPUT_X_STR
   CALL PUTSS
-  ;SEND EAX VALUE TO X VARIABLE
-  LEA ESI, [X]
+  ;записать EAX в X переменную
+  LEA EDI, X
   CALL READ_NUM
   PUTL EMPTYS
 
-  PUTL EMPTYS
-  MOV EAX, [X]
-  PUTL EMPTYS
-  CALL PRINT_DEC
-  PUTL EMPTYS
 
-  XOR EAX, EAX
-  MOV EAX, [X]
+ ;вывод числа из Х в EAX И НА ЭКРАН
+  MOV EAX, X
   MOV ECX, EAX
   CALL PRINT_DEC
   PUTL EMPTYS
 
-  XOR ESI, ESI
-  LEA ESI, [INPUT_Y_STR]
+  MOV EAX, X
+  PUTL EMPTYS
+  CALL PRINT_DEC
+  PUTL EMPTYS
+
+
+  ;ввод числа У
+  XOR EDI, EDI
+  LEA ESI, INPUT_Y_STR
   CALL PUTSS
- ;SEND EAX VALUE TO Y VARIABLE
-  LEA ESI, [Y]
+ ;записать EAX в У переменную
+  LEA EDI, Y
   CALL READ_NUM
 
   PUTL EMPTYS
-  MOV EAX, [Y]
+  MOV EAX, X
+  PUTL EMPTYS
+  CALL PRINT_DEC
+  PUTL EMPTYS
+
+  ;вывод числа из У в EAX И НА ЭКРАН
+  PUTL EMPTYS
+  MOV EAX, Y
   PUTL EMPTYS
   CALL PRINT_DEC
   PUTL EMPTYS
 
 
 
-
-
-  XOR EBX,EBX
-  MOV EBX, [Y]
-  MOV EAX, EBX
+  MOV EAX, X
+  PUTL EMPTYS
   CALL PRINT_DEC
   PUTL EMPTYS
-  ADD ECX, EBX
-  MOV EAX, ECX
+
+  MOV EAX, Y
+  PUTL EMPTYS
+  CALL PRINT_DEC
   PUTL EMPTYS
 
-  CALL PUTC
-  PUTL EMPTYS
+  ; MOV EAX, 49
+  ; MOV ECX, 50
+  ; ADD EAX, ECX
+  ; CALL PRINT_DEC
+  ; PUTL EMPTYS
+
+
 
 
 
@@ -223,10 +238,6 @@ READ_NUM PROC NEAR
   xor ebx, ebx
   ADD EDX, 1
   MOV CL, [EDX]
-  ; ADD CL, 48
-  ; MOV AL, CL
-  ; CALL PUTC
-  ; SUB CL, 48
   ADD EDX, 1
   l1:
      mov bl, [EDX]
@@ -242,8 +253,8 @@ READ_NUM PROC NEAR
        inc EDX
        loop l1
   shr al,1
-; PUT EAX VALUE INTO VARIABLE WITH ESI ADDRESS
-  MOV [ESI], EAX
+; PUT EAX VALUE INTO VARIABLE WITH EDI ADDRESS
+  MOV [EDI], EAX
   RET
 READ_NUM ENDP
 
