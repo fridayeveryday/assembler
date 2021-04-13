@@ -123,28 +123,6 @@ CEXIT:	CMP	AL,	CHESC
 
 
 MY_PROG:
-  ; PUTL	EMPTYS
-  ; LEA	DX,	MYBUF
-  ; CALL	GETS
-  ; XOR ECX,ECX
-  ; XOR EAX,EAX
-  ; MOV CL, MYBUF[1]
-  ; MOV AL, CL
-  ; ADD AL, 48
-  ; PUTL	EMPTYS
-  ; CALL PUTC
-  ; PUTL	EMPTYS
-  ; XOR ESI, esi
-  ; LEA ESI, [MYBUF]
-  ; CALL READ_NUM
-
-  ; LEA ESI, [X]
-  ; MOV EAX, 50
-  ; MOV [ESI], EAX
-  ; MOV EAX, [X]
-  ; PUTL EMPTYS
-  ; CALL PRINT_DEC
-
  ;ввод числа Х
   PUTL	EMPTYS
   LEA ESI, INPUT_X_STR
@@ -154,19 +132,6 @@ MY_PROG:
   CALL READ_NUM
   PUTL EMPTYS
 
-
- ;вывод числа из Х в EAX И НА ЭКРАН
-  MOV EAX, X
-  MOV ECX, EAX
-  CALL PRINT_DEC
-  PUTL EMPTYS
-
-  MOV EAX, X
-  PUTL EMPTYS
-  CALL PRINT_DEC
-  PUTL EMPTYS
-
-
   ;ввод числа У
   XOR EDI, EDI
   LEA ESI, INPUT_Y_STR
@@ -174,44 +139,53 @@ MY_PROG:
  ;записать EAX в У переменную
   LEA EDI, Y
   CALL READ_NUM
-
   PUTL EMPTYS
-  MOV EAX, X
-  PUTL EMPTYS
-  CALL PRINT_DEC
-  PUTL EMPTYS
-
-  ;вывод числа из У в EAX И НА ЭКРАН
-  PUTL EMPTYS
-  MOV EAX, Y
-  PUTL EMPTYS
-  CALL PRINT_DEC
-  PUTL EMPTYS
-
-
 
   MOV EAX, X
-  PUTL EMPTYS
-  CALL PRINT_DEC
-  PUTL EMPTYS
+  AND EAX, 11110b ;маска на х1-х4 бита
 
-  MOV EAX, Y
-  PUTL EMPTYS
-  CALL PRINT_DEC
-  PUTL EMPTYS
-
-  ; MOV EAX, 49
-  ; MOV ECX, 50
-  ; ADD EAX, ECX
-  ; CALL PRINT_DEC
-  ; PUTL EMPTYS
-
-
-
+  ;СРАВНИТЬ Х1-Х4 БИТА НА СООТВЕТСТВИЕ ЛЖИ ИЗ ТАБЛИЧНЫХ
+  CMP EAX, 100b
+  JE FALSE
+  CMP EAX, 1100b
+  JE FALSE
+  CMP EAX, 10b
+  JE FALSE
+  CMP EAX, 10010b
+  JE FALSE
+  CMP EAX, 110b
+  JE FALSE
+  ; ИНАЧЕ ПРЫЖОК НА ВЫОПЛЕНИЕ ЕСЛИ ЗНАЧЕНИЕ ИСТИНА ИЗ ТАБИЛЦЫ
+  JMP TRUE
 
 
 
-  JMP @@E
+
+TRUE:
+  MOV EAX, X
+  SHR EAX, 2
+  MOV EBX, Y
+  SHL EBX, 2
+  ADD EAX, EBX
+  MOV Z, EAX
+  JMP CHANGE_Z
+FALSE:
+  MOV EAX, X
+  SHR EAX, 3
+  MOV EBX, Y
+  SUB EAX, EBX
+  MOV Z, EAX
+
+CHANGE_Z:
+  MOV EAX, Z
+  MOV EBX, EAX
+  AND EAX, 1000b
+  CMP EAX, 0
+  
+
+
+
+JMP @@E
 
 ERROR_NUM:
   LEA ESI, ERROR_NUM_STR
