@@ -141,18 +141,9 @@ MY_PROG:
   CALL READ_NUM
   PUTL EMPTYS
 
-  MOV EAX, X
-  CALL PRINT_DEC
-  PUTL EMPTYS
-
-  MOV EAX, X
-  CALL PRINT_BIN
-  PUTL EMPTYS
-
-
-
-  ; JMP @@E
-
+  ;-------------------------------------------------
+  ; начало подсчета
+  ; берем х1-х4 биты
   MOV EAX, X
   AND EAX, 11110b ;маска на х1-х4 бита
 
@@ -170,9 +161,7 @@ MY_PROG:
   ; ИНАЧЕ ПРЫЖОК НА ВЫОПЛЕНИЕ ЕСЛИ ЗНАЧЕНИЕ ИСТИНА ИЗ ТАБИЛЦЫ
   JMP TRUE
 
-
-
-
+; вычисление Z если истинна или ложь соответственно
 TRUE:
   MOV EAX, X
   SHR EAX, 2
