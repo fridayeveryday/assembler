@@ -110,7 +110,7 @@ CMINUS:	CMP	AL,	'+'    ; укорачивать задержку?
 	DEC	PAUSE+2        ; убавить 65536 мкс
 BACK:	JMP	@@L
 CEXIT:
-  CMP AL, '1'
+  CMP AL, '1'    ;сравнение с 1 и переход на подсчет функции
   JE MY_PROG
   CMP	AL,	CHESC
 	JE	@@E
