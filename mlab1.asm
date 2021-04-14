@@ -15,6 +15,19 @@
 X DD 0
 Y DD 0
 Z DD 0
+INPUT_X_STR DB 'PLEASE ENTER A BINARY X', 0
+INPUT_Y_STR DB 'PLEASE ENTER A BINARY Y', 0
+ERROR_NUM_STR DB 'ERROR IN INPUTED NUMBER, RECHEK IT', 0
+; FUNCTION DB 'f = x1x2x3 | x2!x3x4 | !x1!x2 | x1!x2x3!x4 | x3x4', 0
+; Z3 DB 'z3=!z3', 0
+; Z2 DB 'z2|=z19', 0
+; Z7 DB 'z7&=z8', 0
+; Z_STR DB 'f1 ? X/4+4*Y : X/8 - Y', 0
+; Z_BEFORE_DEC DB 'Z BEFORE CHAMGES (DECIMAL):', 0
+; Z_BEFORE_BIN DB 'Z BEFORE CHAMGES (BINARY):', 0
+; Z_AFTER_DEC DB 'Z AFTER CHANGES (DECIAML)', 0
+; Z_AFTER_BIN DB 'Z AFTER CHANGES (BINARY)', 0
+
 SLINE	DB	78 DUP (CHSEP), 0
 REQ	DB	"Фамилия И.О.: ",0FFh
 MINIS	DB	"МИНИСТЕРСТВО ОБРАЗОВАНИЯ РОССИЙСКОЙ ФЕДЕРАЦИИ",0
@@ -35,10 +48,6 @@ TI	DB	LENNUM+LENNUM/2 DUP(?), 0 ; строка вывода числа тактов
                                           ; запас для разделительных "`"
 
 MYBUF DB BUFLEN
-D DB '---------------------------------', 0
-INPUT_X_STR DB 'PLEASE ENTER A BINARY X', 0
-INPUT_Y_STR DB 'PLEASE ENTER A BINARY Y', 0
-ERROR_NUM_STR DB 'ERROR IN INPUTED NUMBER, RECHEK IT', 0
 
 
 ;========================= Программа =========================
@@ -49,22 +58,15 @@ BEGIN	LABEL	NEAR
 	; инициализация сегментного регистра
 	MOV	AX,	@DATA
 	MOV	DS,	AX
+  JMP MY_PROG
 	; инициализация задержки
 	MOV	PAUSE,	PAUSE_L
 	MOV	PAUSE+2,PAUSE_H
-  JMP MY_PROG
 
 	PUTLS	REQ	; запрос имени
 	; ввод имени
-	; LEA	DX,	MYBUF
-	; CALL	GETS
-  ; XOR ECX,ECX
-  ; XOR EAX,EAX
-  ; MOV CL, MYBUF[1]
-  ; MOV AL, CL
-  ; ADD AL, 48
-  ; CALL PUTC
-
+	LEA	DX,	BUF
+	CALL	GETS
 
 @@L:	; циклический процесс повторения вывода заставки
 	; вывод заставки
@@ -108,7 +110,10 @@ CMINUS:	CMP	AL,	'+'    ; укорачивать задержку?
 	JE	BACK
 	DEC	PAUSE+2        ; убавить 65536 мкс
 BACK:	JMP	@@L
-CEXIT:	CMP	AL,	CHESC
+CEXIT:
+  CMP AL, '1'
+  JE MY_PROG
+  CMP	AL,	CHESC
 	JE	@@E
 	TEST	AL,	AL
   CMP AL, '1'
@@ -133,13 +138,24 @@ MY_PROG:
   PUTL EMPTYS
 
   ;ввод числа У
-  XOR EDI, EDI
+  ; XOR EDI, EDI
   LEA ESI, INPUT_Y_STR
   CALL PUTSS
  ;записать EAX в У переменную
   LEA EDI, Y
   CALL READ_NUM
   PUTL EMPTYS
+
+  ; LEA ESI, FUNCTION
+  ; CALL PUTSS
+  ; LEA ESI, Z_STR
+  ; CALL PUTSS
+  ; LEA ESI, Z3
+  ; CALL PUTSS
+  ; LEA ESI, Z2
+  ; CALL PUTSS
+  ; LEA ESI, Z7
+  ; CALL PUTSS
 
   ;-------------------------------------------------
   ; начало подсчета
@@ -177,9 +193,16 @@ FALSE:
   SUB EAX, EBX
   MOV Z, EAX
 
+; LEA ESI, Z_BEFORE_DEC
+; CALL PUTSS
 PUTL EMPTYS
 MOV EAX, Z
 CALL PRINT_DEC
+PUTL EMPTYS
+
+; LEA ESI, Z_BEFORE_BIN
+; CALL PUTSS
+CALL PRINT_BIN
 PUTL EMPTYS
 
 CHANGE_Z:
@@ -214,14 +237,17 @@ CHANGE_Z:
   SHL EBX, 7    ; ВЫДВИГАЕМ ЗНАЧЕНИЕ ОПЕРАЦИИ В ПОЗИЦИЮ Z7
   OR EAX, EBX  ; ЗАНЕСЕНИЕ РЕЗУЛЬТАТА EBX В EAX
 
-  MOV Z, EAX
+
+  ; LEA ESI, Z_AFTER_DEC
+  ; CALL PUTSS
   PUTL EMPTYS
   MOV EAX, Z
   CALL PRINT_DEC
   PUTL EMPTYS
 
-
-
+  ; LEA ESI, Z_AFTER_BIN
+  CALL PRINT_BIN
+  PUTL EMPTYS
 
 
 JMP @@E
