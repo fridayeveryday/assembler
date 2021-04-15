@@ -233,19 +233,7 @@ CHANGE_Z:
   ; ˆ‡Œ……ˆ… 3 ˆ’€
   MOV EAX, Z
   XOR EAX, 1000b ; ˆ‚…‘ˆŸ 3 ˆ’€
-  ;----------------------------------------
-  ; ˆ‡Œ……ˆ… 2 ˆ’€
-  MOV EBX, EAX
-  AND EBX, 100b  ; ¬ áª  3 ¡¨â 
-  SHR EBX, 2    ; ‚ EBX ‡€—…ˆ… ˆ’€ Z2
 
-  MOV ECX, EAX
-  AND ECX, 10000000000000000000b   ; ¬ áª  19 ¡¨â 
-  SHR ECX, 19   ; ‚ ECX ‡€—…ˆ… ˆ’€ Z19
-
-  OR EBX, ECX  ; ‚›—ˆ‘‹…ˆ… Z2|=Z19
-  SHL EBX, 2    ; ‚›„‚ˆƒ€…Œ ‡€—…ˆ… Ž…€–ˆˆ ‚ Ž‡ˆ–ˆž Z2
-  OR EAX, EBX  ; ‡€…‘…ˆ… …‡“‹œ’€’€ EBX ‚ EAX
   ;----------------------------------------
   ;ˆ‡Œ……ˆ… 7 ˆ’€
 
@@ -259,7 +247,32 @@ CHANGE_Z:
 
   AND EBX, ECX  ; ‚›—ˆ‘‹…ˆ… Z7&=Z8
   SHL EBX, 7    ; ‚›„‚ˆƒ€…Œ ‡€—…ˆ… Ž…€–ˆˆ ‚ Ž‡ˆ–ˆž Z7
+  CMP EBX, 0
+  JE WRITE_0_Z7
+  WRITE_1_Z7:
   OR EAX, EBX  ; ‡€…‘…ˆ… …‡“‹œ’€’€ EBX ‚ EAX
+  JMP CNT
+  WRITE_0_Z7:
+  OR EBX, 10000000b  ; ‘’€‚ˆŒ ‚ EBX € 7 ˆ’ …„ˆˆ–“
+  NOT EBX
+  AND EAX, EBX ; ‡€…‘…ˆ… …‡“‹œ’€’€ EBX ‚ EAX
+
+  CNT:
+
+  ;----------------------------------------
+  ; ˆ‡Œ……ˆ… 2 ˆ’€
+  MOV EBX, EAX
+  AND EBX, 100b  ; ¬ áª  2 ¡¨â 
+  SHR EBX, 2    ; ‚ EBX ‡€—…ˆ… ˆ’€ Z2
+
+  MOV ECX, EAX
+  AND ECX, 10000000000000000000b   ; ¬ áª  19 ¡¨â 
+  SHR ECX, 19   ; ‚ ECX ‡€—…ˆ… ˆ’€ Z19
+
+  OR EBX, ECX  ; ‚›—ˆ‘‹…ˆ… Z2|=Z19
+  SHL EBX, 2    ; ‚›„‚ˆƒ€…Œ ‡€—…ˆ… Ž…€–ˆˆ ‚ Ž‡ˆ–ˆž Z2
+  OR EAX, EBX  ; ‡€…‘…ˆ… …‡“‹œ’€’€ EBX ‚ EAX
+
 
   MOV Z, EAX
 
