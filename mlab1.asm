@@ -137,6 +137,10 @@ MY_PROG:
   LEA EDI, X
   CALL READ_NUM
   PUTL EMPTYS
+  ; ÇõÇéÑ Ç 10 óçéâ ÇàÑÖ óàëãÄ
+  MOV EAX, X
+  CALL PRINT_DEC
+  PUTL EMPTYS
 
   ;¢¢Æ§ Á®·´† ì
   ; XOR EDI, EDI
@@ -145,6 +149,11 @@ MY_PROG:
  ;ß†Ø®·†‚Ï EAX ¢ ì Ø•‡•¨•≠≠„Ó
   LEA EDI, Y
   CALL READ_NUM
+  PUTL EMPTYS
+
+  ; ÇõÇéÑ Ç 10 óçéâ ÇàÑÖ óàëãÄ
+  MOV EAX, Y
+  CALL PRINT_DEC
   PUTL EMPTYS
 
   LEA ESI, FUNCTION
@@ -201,6 +210,8 @@ FALSE:
 
 
 CHANGE_Z:
+  XOR ECX, ECX
+  XOR EDX, EDX
   LEA ESI, Z_BEFORE_DEC
   CALL PUTSS
   MOV EAX, Z
@@ -208,7 +219,8 @@ CHANGE_Z:
   PUTL EMPTYS
   PUTL EMPTYS
 
-
+  XOR ECX, ECX
+  XOR EDX, EDX
   LEA ESI, Z_BEFORE_BIN
   CALL PUTSS
   MOV EAX, Z
@@ -251,6 +263,8 @@ CHANGE_Z:
 
   MOV Z, EAX
 
+  XOR ECX, ECX
+  XOR EDX, EDX
   LEA ESI, Z_AFTER_DEC
   CALL PUTSS
   MOV EAX, Z
@@ -259,6 +273,8 @@ CHANGE_Z:
   PUTL EMPTYS
 
 
+  XOR ECX, ECX
+  XOR EDX, EDX
   LEA ESI, Z_AFTER_BIN
   CALL PUTSS
   MOV EAX, Z
@@ -278,17 +294,6 @@ ERROR_NUM:
   CALL PUTSS
   JMP @@E
 
-; ; ESI - ADDRES OF STRING
-; OUTPUT PROC NEAR
-;   ; PUTL EMPTYS
-;   XOR EAX, EAX
-;   XOR EDX, EDX
-;   XOR ECX, ECX
-;   CALL PUTSS
-;   ; PUTL EMPTYS
-;   RET
-; OUTPUT ENDP
-
 ; RESULT IN EAX , STRING WITH BINARY NUMBER IN MYBUFF
 READ_NUM PROC NEAR
   LEA EDX, [MYBUF]
@@ -306,12 +311,11 @@ READ_NUM PROC NEAR
      CMP BL, 1
      JNE ERROR_NUM
      CONTINUE:
-       add al, bl
-       ; CALL PUTC
-       shl al, 1
+       add EAX, EBX
+       shl EAX, 1
        inc EDX
-       loop l1
-  shr al,1
+      LOOP L1
+  shr EAX,1
 ; PUT EAX VALUE INTO VARIABLE WITH EDI ADDRESS
   MOV [EDI], EAX
   RET
