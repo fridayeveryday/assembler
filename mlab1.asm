@@ -14,13 +14,17 @@
         .DATA
 STR_ARR	DB 750 DUP (0)
 WORD_LEN DD 30
-COUNTER DD 0
-COUNTER2 DD 2
+COUNTER_STR_ARR DD 0
+COUNTER_LINE DD 0
+COUNTER_4_OUT DD 0
+MAX_STR_ARR DD 25
+MAX_STR DD 10
 MYBUF DB 70
 A DB 'ABCD', 0
 B DB 70 DUP (0)
 EMPTYS	DB	0
-EM DB 'QWE$RTY$',0
+EM db 128 dup(0)
+INPUT DB 'HELLO WORLD MY DEAR FREIND', 0
 ;========================= è‡Æ£‡†¨¨† =========================
         .CODE
         BEGIN	LABEL	NEAR
@@ -29,82 +33,150 @@ EM DB 'QWE$RTY$',0
 	MOV	AX,	@DATA
 	MOV	DS,	AX
 
-  XOR ECX, ECX
-  XOR EDX, EDX
+  TREAT_LINE:
+    MOV EAX, COUNTER_LINE
+    MOV EBX, MAX_STR
+    CMP EAX, EBX
+    JGE PRINT_ARR
 
-  LEA ESI, EM
-  CALL PUTSS
-  XOR EAX, EAX
-  MOV AL, A
-  MOV BX, 2
-  ADD BX, 0
-  MOV B[BX], AL
-  INC AL
+    LEA EDX, [MYBUF]
+    CALL GETS
+    CALL TREAT_STR
 
-  ; lea bx, B
-  ; INC BX
-  ; MOV [BX], AL
-  ; ; MOV B + 1, AL
-  ; MOV AL, B
-  ; CALL PUTC
+    PUTL EMPTYS
+    MOV ECX, COUNTER_LINE
+    INC ECX
+    MOV COUNTER_LINE, ECX
+
+    XOR ECX, ECX
+    XOR EDX, EDX
+
+    JMP TREAT_LINE
+
+
+  OUTPUT:
   PUTL EMPTYS
-  MOV BX, 2
-  MOV AL, B[BX]
-  ; INC AL
-  CALL PUTC
+    PRINT_ARR:
+      ; PUTL EMPTYS
+      MOV EBX, COUNTER_STR_ARR
+      MOV EAX, COUNTER_4_OUT
+      CMP EAX, EBX
+      JGE @@E
+      ;--------------------------
+      CALL PRINT_HEX_COUNTER
+
+      PUSH EAX
+      MOV EAX, ':'
+      CALL PUTC
+      POP EAX
+
+      MOV EAX, COUNTER_4_OUT
+      MOV ECX, WORD_LEN
+      MUL ECX
+      LEA ESI, STR_ARR
+      ADD ESI, EAX
+      XOR ECX, ECX
+      XOR EDX, EDX
+      CALL PUTSS
+
+      MOV EAX, COUNTER_4_OUT
+      INC EAX
+      MOV COUNTER_4_OUT, EAX
+      ;-----------------------------------
+      JMP PRINT_ARR
+
+
+
+
+  ; PUTL EMPTYS
+  ; LEA ESI, STR_ARR
+  ; CALL PUTSS
   ;
-  PUTL EMPTYS
-  LEA EDX, [MYBUF]
-  CALL GETS
-  PUTL EMPTYS
-  MOV AL, MYBUF[1]
-  ADD AL, 48
-  CALL PUTC
-  PUTL EMPTYS
-  MOV EAX, 4
-  ADD EAX, COUNTER2
-  ADD EAX, 48
-  CALL PUTC
+  ; PUTL EMPTYS
+  ; LEA ESI, STR_ARR
+  ; MOV EAX, WORD_LEN
+  ; ADD ESI, EAX
+  ; CALL PUTSS
 
-  XOR ECX, ECX
 
-  CMP AL, CHCR
-  JNE @@E
-  PUTL A
+
+  ;
+  ; XOR ECX, ECX
+  ; XOR EDX, EDX
+  ;
+  ; XOR EAX, EAX
+  ; MOV AL, A
+  ; MOV BX, 2
+  ; ADD BX, 0
+  ; MOV B[BX], AL
+  ; INC AL
+  ;
+  ; ; lea bx, B
+  ; ; INC BX
+  ; ; MOV [BX], AL
+  ; ; ; MOV B + 1, AL
+  ; ; MOV AL, B
+  ; ; CALL PUTC
+  ; PUTL EMPTYS
+  ; MOV BX, 2
+  ; MOV AL, B[BX]
+  ; ; INC AL
+  ; CALL PUTC
+  ; ;
+  ; PUTL EMPTYS
+  ; LEA EDX, [MYBUF]
+  ; CALL GETS
+  ; PUTL EMPTYS
+  ; MOV AL, MYBUF[1]
+  ; ADD AL, 48
+  ; CALL PUTC
+  ; PUTL EMPTYS
+  ; MOV EAX, 4
+  ; ADD EAX, COUNTER2
+  ; ADD EAX, 48
+  ; CALL PUTC
+  ;
+  ; XOR ECX, ECX
+  ;
+  ; CMP AL, CHCR
+  ; JNE @@E
+  ; PUTL A
   JMP @@E
 
   TREAT_STR PROC NEAR
     XOR ECX, ECX
     XOR EAX, EAX
-    XOR EBX, EBX
+    xor edx, edx
     XOR EDI, EDI
     INC EDX
     MOV CL, MYBUF[1]
+    ADD CL, 2
+    mov ebx, 2
     TREAT_CHAR:
-      MOV DL, MYBUF[EBX]
+      MOV DL, MYBUF[BX]
       CMP BL, CL
       JGE GET_OUT
 
       CMP DL, ' '
       JE NEW_WORD
 
-      CMP DL, '!' ; TO EXIT
-      JE @@E
+      CMP DL, '!' ; SIGN OF INPUT END
+      JE OUT_OF_INPUT
 
-      ;ESI - INDEX OFARRAY, EDI - INDEX OF CHAR
-      MOV ESI, COUNTER
+      ;ESI - INDEX OF ARRAY, EDI - INDEX OF CHAR
+      MOV ESI, COUNTER_STR_ARR
 
       PUSH EAX
       PUSH EDX
       MOV EAX, WORD_LEN
-      MOV ESI, COUNTER
+      MOV ESI, COUNTER_STR_ARR
       MUL ESI
       MOV ESI, EAX
       POP EDX
       POP EAX
 
       ADD ESI, EDI
-      MOV STR_ARR[ESI], DL ;áÄèàëÄíú ëàåÇéã
+      MOV STR_ARR[SI], DL ;áÄèàëÄíú ëàåÇéã
       INC EDI
 
       INCREAMENTING:
@@ -112,23 +184,48 @@ EM DB 'QWE$RTY$',0
         JMP TREAT_CHAR
 
       NEW_WORD:
-        MOV ESI, COUNTER
+        MOV EDI, MAX_STR_ARR
+        MOV ESI, COUNTER_STR_ARR
+        CMP ESI, EDI
+        JGE GET_OUT
         INC ESI
-        MOV COUNTER, ESI
+        MOV COUNTER_STR_ARR, ESI
 
         XOR EDI, EDI
+        JMP INCREAMENTING
 
     GET_OUT:
+    MOV ESI, COUNTER_STR_ARR
+    INC ESI
+    MOV COUNTER_STR_ARR, ESI
+    RET
 
-
+    OUT_OF_INPUT:
+    MOV ESI, COUNTER_STR_ARR
+    INC ESI
+    MOV COUNTER_STR_ARR, ESI
+    JMP OUTPUT
 
   TREAT_STR  ENDP
 
-  PRINT_ARR PROC NEAR
-    MOV ECX, COUNTER
-    
-  PRINT_ARR ENDP
 
+  PRINT_HEX_COUNTER PROC NEAR ; EAX - NUMBER TO CONVERT
+     xor edx, edx
+     xor ecx, ecx
+     mov ebx, 16
+     parse:
+         div ebx
+         push edx
+         inc ecx
+         cmp eax, 0
+         jg parse
+     print_hex:
+         pop eax
+         add eax, 48
+         CALL PUTC
+         loop print_hex
+    ret
+  PRINT_HEX_COUNTER ENDP
  ;¢¢Æ§ Á®·´† ï
 ;   PUTL	EMPTYS
 ;   LEA ESI, INPUT_X_STR

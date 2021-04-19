@@ -17,6 +17,6 @@ if errorlevel 1 goto edit
 goto end
 
 :edit 
-	td.exe mlab1.asm
+	
 :end	
 	mlab1.exe

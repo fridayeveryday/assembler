@@ -1,4 +1,4 @@
-Turbo Assembler	 Version 2.51	     04/18/21 24:33:49	    Page 1
+Turbo Assembler	 Version 2.51	     04/20/21 00:09:40	    Page 1
 mlab1.asm
 
 
@@ -60,7 +60,7 @@ mlab1.asm
 1    55						 MOV   DX,   PAUSE
 1    56						 MOV   CX,   PAUSE+2
 1    57						 CALL  PUTSS
-Turbo Assembler	 Version 2.51	     04/18/21 24:33:49	    Page 2
+Turbo Assembler	 Version 2.51	     04/20/21 00:09:40	    Page 2
 mlab1.asm
 
 
@@ -112,372 +112,553 @@ mlab1.asm
     102	    0000				 .DATA
     103	    0000  02EE*(00)		 STR_ARR DB 750	DUP (0)
     104	    02EE  0000001E		 WORD_LEN DD 30
-    105	    02F2  00000000		 COUNTER DD 0
-    106	    02F6  46			 MYBUF DB 70
-    107	    02F7  41 42	43 44 00	 A DB 'ABCD', 0
-    108	    02FC  46*(00)		 B DB 70 DUP (0)
-    109	    0342  00			 EMPTYS	 DB	 0
-    110					 ;========================= è‡Æ£‡†¨¨† =========================
-    111	    0343				 .CODE
-    112	    0000				 BEGIN	 LABEL	 NEAR
-    113
-    114						 ; ®≠®Ê®†´®ß†Ê®Ô ·•£¨•≠‚≠Æ£Æ ‡•£®·‚‡†
-Turbo Assembler	 Version 2.51	     04/18/21 24:33:49	    Page 3
+    105	    02F2  00000000		 COUNTER_STR_ARR DD 0
+    106	    02F6  00000000		 COUNTER_LINE DD 0
+    107	    02FA  00000000		 COUNTER_4_OUT DD 0
+    108	    02FE  00000019		 MAX_STR_ARR DD	25
+    109	    0302  0000000A		 MAX_STR DD 10
+    110	    0306  46			 MYBUF DB 70
+    111	    0307  41 42	43 44 00	 A DB 'ABCD', 0
+    112	    030C  46*(00)		 B DB 70 DUP (0)
+    113	    0352  00			 EMPTYS	 DB	 0
+    114	    0353  80*(00)		 EM db 128 dup(0)
+Turbo Assembler	 Version 2.51	     04/20/21 00:09:40	    Page 3
 mlab1.asm
 
 
 
-    115	    0000  B8 0000s			 MOV	 AX,	 @DATA
-    116	    0003  8E D8				 MOV	 DS,	 AX
-    117	    0005  66| 33 C0		   XOR EAX, EAX
-    118	    0008  A1 02F7r		   MOV EAX, A
-**Error** mlab1.asm(30)	Operand	types do not match
-    119
-    120					   ; PUTL EMPTYS
-    121					   ; LEA EDX, [MYBUF]
-    122					   ; CALL GETS
-    123					   ; PUTL EMPTYS
-    124					   ;
-    125					   ; XOR ECX, ECX
-    126					   ; XOR EAX, EAX
-    127					   ; XOR EBX, EBX
-    128					   ; ADD EDX, 1
-    129					   ; XOR ECX, ECX
-    130					   ; MOV CL, [EDX]
-    131					   ; MOV AL, [EDX]
-    132					   ;
-    133					   ; LEA DI, STR_ARR
-    134					   ; MOV [DI], AL
-    135					   ; INC DI
-    136					   ; MOV AL, [STR_ARR]
-    137					   ; CALL PUTC
-    138					   ; PUTL EMPTYS
-    139					   ;
-    140					   ; INC DX
-    141					   ; MOV AL, [EDX]
-    142					   ; LEA DI, STR_ARR
-    143					   ; MOV [DI + 1], AL
-    144					   ; INC DI
-    145					   ; MOV AL, [STR_ARR +	1]
-    146					   ; CALL PUTC
-    147					   ; PUTL EMPTYS
-    148					   ;
-    149					   ; CALL PUTC
-    150
-    151					   ; CMP AL, CHCR
-    152					   ; JNE @@E
-    153					   ; PUTL A
-    154					   ; JMP @@E
-    155
-    156	    000B			   TREAT_STR PROC NEAR
-    157	    000B  66| 33 C9		     XOR ECX, ECX
-    158	    000E  66| 33 C0		     XOR EAX, EAX
-    159	    0011  66| 33 DB		     XOR EBX, EBX
-    160	    0014  66| 42		     INC EDX
-    161	    0016  67| 8A 0A		     MOV CL, [EDX]
-    162
-    163
-    164
-    165	    0019			   TREAT_STR  ENDP
-    166
-    167					  ;¢¢Æ§	Á®·´† ï
-    168					 ;   PUTL	 EMPTYS
-    169					 ;   LEA ESI, INPUT_X_STR
-    170					 ;   CALL PUTSS
-Turbo Assembler	 Version 2.51	     04/18/21 24:33:49	    Page 4
+    115	    03D3  48 45	4C 4C 4F 20 57+	 INPUT DB 'HELLO WORLD MY DEAR FREIND',	0
+    116		  4F 52	4C 44 20 4D 59+
+    117		  20 44	45 41 52 20 46+
+    118		  52 45	49 4E 44 00
+    119					 ;========================= è‡Æ£‡†¨¨† =========================
+    120	    03EE				 .CODE
+    121	    0000				 BEGIN	 LABEL	 NEAR
+    122
+    123						 ; ®≠®Ê®†´®ß†Ê®Ô ·•£¨•≠‚≠Æ£Æ ‡•£®·‚‡†
+    124	    0000  B8 0000s			 MOV	 AX,	 @DATA
+    125	    0003  8E D8				 MOV	 DS,	 AX
+    126
+    127	    0005			   TREAT_LINE:
+    128	    0005  66| A1 02F6r		     MOV EAX, COUNTER_LINE
+    129	    0009  66| 8B 1E 0302r	     MOV EBX, MAX_STR
+    130	    000E  66| 3B C3		     CMP EAX, EBX
+    131	    0011  7D 41	90 90		     JGE PRINT_ARR
+    132
+    133	    0015  66| 8D 16 0306r	     LEA EDX, [MYBUF]
+    134	    001A  E8 0000e		     CALL GETS
+    135	    001D  E8 0080		     CALL TREAT_STR
+    136
+    137					     PUTL EMPTYS
+1   138	    0020  66| 50		   PUSH	EAX
+1   139	    0022  BE 0352r			 LEA   SI,   EMPTYS
+1   140	    0025  33 C9				 XOR   CX,   CX
+1   141	    0027  33 D2				 XOR   DX,   DX
+1   142	    0029  33 C0				 XOR   AX,   AX
+1   143	    002B  E8 0000e			 CALL  PUTSS
+1   144	    002E  66| 58		   POP EAX
+    145	    0030  66| 8B 0E 02F6r	     MOV ECX, COUNTER_LINE
+    146	    0035  66| 41		     INC ECX
+    147	    0037  66| 89 0E 02F6r	     MOV COUNTER_LINE, ECX
+    148
+    149	    003C  66| 33 C9		     XOR ECX, ECX
+    150	    003F  66| 33 D2		     XOR EDX, EDX
+    151
+    152	    0042  EB C1			     JMP TREAT_LINE
+    153
+    154
+    155	    0044			   OUTPUT:
+    156					   PUTL	EMPTYS
+1   157	    0044  66| 50		   PUSH	EAX
+1   158	    0046  BE 0352r			 LEA   SI,   EMPTYS
+1   159	    0049  33 C9				 XOR   CX,   CX
+1   160	    004B  33 D2				 XOR   DX,   DX
+1   161	    004D  33 C0				 XOR   AX,   AX
+1   162	    004F  E8 0000e			 CALL  PUTSS
+1   163	    0052  66| 58		   POP EAX
+    164	    0054			     PRINT_ARR:
+    165					       ; PUTL EMPTYS
+    166	    0054  66| 8B 1E 02F2r	       MOV EBX,	COUNTER_STR_ARR
+    167	    0059  66| A1 02FAr		       MOV EAX,	COUNTER_4_OUT
+    168	    005D  66| 3B C3		       CMP EAX,	EBX
+    169	    0060  0F 8D	00F6		       JGE @@E
+    170					       ;--------------------------
+    171	    0064  E8 00CE		       CALL PRINT_HEX_COUNTER
+Turbo Assembler	 Version 2.51	     04/20/21 00:09:40	    Page 4
 mlab1.asm
 
 
 
-    171					 ;
-    172					 ;   ;ß†Ø®·†‚Ï EAX ¢ X Ø•‡•¨•≠≠„Ó
-    173					 ;   LEA EDI, X
-    174					 ;   CALL READ_NUM
-    175					 ;   PUTL EMPTYS
-    176					 ;   ; ÇõÇéÑ Ç 10 óçéâ ÇàÑÖ óàëãÄ
-    177					 ;   MOV EAX, X
-    178					 ;   CALL PRINT_DEC
-    179					 ;   PUTL EMPTYS
-    180					 ;
-    181					 ;   ;¢¢Æ§ Á®·´† ì
-    182					 ;   ; XOR EDI,	EDI
-    183					 ;   LEA ESI, INPUT_Y_STR
-    184					 ;   CALL PUTSS
-    185					 ;  ;ß†Ø®·†‚Ï EAX ¢ ì Ø•‡•¨•≠≠„Ó
-    186					 ;   LEA EDI, Y
-    187					 ;   CALL READ_NUM
-    188					 ;   PUTL EMPTYS
-    189					 ;
-    190					 ;   ; ÇõÇéÑ Ç 10 óçéâ ÇàÑÖ óàëãÄ
-    191					 ;   MOV EAX, Y
-    192					 ;   CALL PRINT_DEC
-    193					 ;   PUTL EMPTYS
-    194					 ;
-    195					 ;   LEA ESI, FUNCTION
-    196					 ;   CALL PUTSS
-    197					 ;   LEA ESI, Z_STR
-    198					 ;   CALL PUTSS
-    199					 ;   LEA ESI, Z3
-    200					 ;   CALL PUTSS
-    201					 ;   LEA ESI, Z2
-    202					 ;   CALL PUTSS
-    203					 ;   LEA ESI, Z7
-    204					 ;   CALL PUTSS
-    205					 ;
-    206					 ;   ;-------------------------------------------------
-    207					 ;   ; ≠†Á†´Æ ØÆ§·Á•‚†
-    208					 ;   ; °•‡•¨ Â1-Â4 °®‚Î
-    209					 ;   MOV EAX, X
-    210					 ;   AND EAX, 11110b ;¨†·™† ≠† Â1-Â4 °®‚†
-    211					 ;
-    212					 ;   ;ëêÄÇçàíú ï1-ï4 ÅàíÄ çÄ ëééíÇÖíëíÇàÖ ãÜà àá íÄÅãàóçõï
-    213					 ;   CMP EAX, 100b
-    214					 ;   JE	FALSE
-    215					 ;   CMP EAX, 1100b
-    216					 ;   JE	FALSE
-    217					 ;   CMP EAX, 10b
-    218					 ;   JE	FALSE
-    219					 ;   CMP EAX, 10010b
-    220					 ;   JE	FALSE
-    221					 ;   CMP EAX, 110b
-    222					 ;   JE	FALSE
-    223					 ;   ; àçÄóÖ èêõÜéä çÄ ÇõéèãÖçàÖ Öëãà áçÄóÖçàÖ àëíàçÄ àá íÄÅàãñõ
-    224					 ;   JMP TRUE
-    225					 ;
-    226					 ; ; ¢ÎÁ®·´•≠®•	Z •·´® ®·‚®≠≠† ®´® ´Æ¶Ï	·ÆÆ‚¢•‚·‚¢•≠≠Æ
-    227					 ; TRUE:
-Turbo Assembler	 Version 2.51	     04/18/21 24:33:49	    Page 5
+    172
+    173	    0067  66| 50		       PUSH EAX
+    174	    0069  66| B8 0000003A	       MOV EAX,	':'
+    175	    006F  E8 0000e		       CALL PUTC
+    176	    0072  66| 58		       POP EAX
+    177
+    178	    0074  66| A1 02FAr		       MOV EAX,	COUNTER_4_OUT
+    179	    0078  66| 8B 0E 02EEr	       MOV ECX,	WORD_LEN
+    180	    007D  66| F7 E1		       MUL ECX
+    181	    0080  66| 8D 36 0000r	       LEA ESI,	STR_ARR
+    182	    0085  66| 03 F0		       ADD ESI,	EAX
+    183	    0088  66| 33 C9		       XOR ECX,	ECX
+    184	    008B  66| 33 D2		       XOR EDX,	EDX
+    185	    008E  E8 0000e		       CALL PUTSS
+    186
+    187	    0091  66| A1 02FAr		       MOV EAX,	COUNTER_4_OUT
+    188	    0095  66| 40		       INC EAX
+    189	    0097  66| A3 02FAr		       MOV COUNTER_4_OUT, EAX
+    190					       ;-----------------------------------
+    191	    009B  EB B7			       JMP PRINT_ARR
+    192
+    193
+    194
+    195
+    196					   ; PUTL EMPTYS
+    197					   ; LEA ESI, STR_ARR
+    198					   ; CALL PUTSS
+    199					   ;
+    200					   ; PUTL EMPTYS
+    201					   ; LEA ESI, STR_ARR
+    202					   ; MOV EAX, WORD_LEN
+    203					   ; ADD ESI, EAX
+    204					   ; CALL PUTSS
+    205
+    206
+    207
+    208					   ;
+    209					   ; XOR ECX, ECX
+    210					   ; XOR EDX, EDX
+    211					   ;
+    212					   ; XOR EAX, EAX
+    213					   ; MOV AL, A
+    214					   ; MOV BX, 2
+    215					   ; ADD BX, 0
+    216					   ; MOV B[BX],	AL
+    217					   ; INC AL
+    218					   ;
+    219					   ; ; lea bx, B
+    220					   ; ; INC BX
+    221					   ; ; MOV [BX], AL
+    222					   ; ; ; MOV B + 1, AL
+    223					   ; ; MOV AL, B
+    224					   ; ; CALL PUTC
+    225					   ; PUTL EMPTYS
+    226					   ; MOV BX, 2
+    227					   ; MOV AL, B[BX]
+    228					   ; ; INC AL
+Turbo Assembler	 Version 2.51	     04/20/21 00:09:40	    Page 5
 mlab1.asm
 
 
 
-    228					 ;   LEA ESI, F1
-    229					 ;   CALL PUTSS
-    230					 ;   MOV EAX, X
-    231					 ;   SHR EAX, 2
-    232					 ;   MOV EBX, Y
-    233					 ;   SHL EBX, 2
-    234					 ;   ADD EAX, EBX
-    235					 ;   MOV Z, EAX
-    236					 ;   JMP CHANGE_Z
-    237					 ; FALSE:
-    238					 ;   LEA ESI, F0
-    239					 ;   CALL PUTSS
-    240					 ;   MOV EAX, X
-    241					 ;   SHR EAX, 3
-    242					 ;   MOV EBX, Y
-    243					 ;   SUB EAX, EBX
-    244					 ;   MOV Z, EAX
-    245					 ;
-    246					 ;
-    247					 ;
-    248					 ; CHANGE_Z:
-    249					 ;   XOR ECX, ECX
-    250					 ;   XOR EDX, EDX
-    251					 ;   LEA ESI, Z_BEFORE_DEC
-    252					 ;   CALL PUTSS
-    253					 ;   MOV EAX, Z
-    254					 ;   CALL PRINT_DEC
-    255					 ;   PUTL EMPTYS
-    256					 ;   PUTL EMPTYS
-    257					 ;
-    258					 ;   XOR ECX, ECX
-    259					 ;   XOR EDX, EDX
-    260					 ;   LEA ESI, Z_BEFORE_BIN
-    261					 ;   CALL PUTSS
-    262					 ;   MOV EAX, Z
-    263					 ;   CALL PRINT_BIN
-    264					 ;   PUTL EMPTYS
-    265					 ;   PUTL EMPTYS
-    266					 ;
-    267					 ;
-    268					 ;
-    269					 ;   ; àáåÖçÖçàÖ 3 ÅàíÄ
-    270					 ;   MOV EAX, Z
-    271					 ;   XOR EAX, 1000b ; àçÇÖêëàü 3 ÅàíÄ
-    272					 ;
-    273					 ;   ;----------------------------------------
-    274					 ;   ;àáåÖçÖçàÖ	7 ÅàíÄ
-    275					 ;
-    276					 ;   MOV EBX, EAX
-    277					 ;   AND EBX, 10000000b	   ; åÄëäÄ 7 ÅàíÄ
-    278					 ;   SHR EBX, 7	   ; Ç EBX áçÄóÖçàÖ ÅàíÄ Z7
-    279					 ;
-    280					 ;   MOV ECX, EAX
-    281					 ;   AND ECX, 100000000b    ; åÄëäÄ 8 ÅàíÄ
-    282					 ;   SHR ECX, 8	   ; Ç EBX áçÄóÖçàÖ ÅàíÄ Z8
-    283					 ;
-    284					 ;   AND EBX, ECX  ; ÇõóàëãÖçàÖ	Z7&=Z8
-Turbo Assembler	 Version 2.51	     04/18/21 24:33:49	    Page 6
+    229					   ; CALL PUTC
+    230					   ; ;
+    231					   ; PUTL EMPTYS
+    232					   ; LEA EDX, [MYBUF]
+    233					   ; CALL GETS
+    234					   ; PUTL EMPTYS
+    235					   ; MOV AL, MYBUF[1]
+    236					   ; ADD AL, 48
+    237					   ; CALL PUTC
+    238					   ; PUTL EMPTYS
+    239					   ; MOV EAX, 4
+    240					   ; ADD EAX, COUNTER2
+    241					   ; ADD EAX, 48
+    242					   ; CALL PUTC
+    243					   ;
+    244					   ; XOR ECX, ECX
+    245					   ;
+    246					   ; CMP AL, CHCR
+    247					   ; JNE @@E
+    248					   ; PUTL A
+    249	    009D  E9 00BA		   JMP @@E
+    250
+    251	    00A0			   TREAT_STR PROC NEAR
+    252	    00A0  66| 33 C9		     XOR ECX, ECX
+    253	    00A3  66| 33 C0		     XOR EAX, EAX
+    254	    00A6  66| 33 D2		     xor edx, edx
+    255	    00A9  66| 33 FF		     XOR EDI, EDI
+    256	    00AC  66| 42		     INC EDX
+    257	    00AE  8A 0E	0307r		     MOV CL, MYBUF[1]
+    258	    00B2  80 C1	02		     ADD CL, 2
+    259	    00B5  66| BB 00000002	     mov ebx, 2
+    260	    00BB			     TREAT_CHAR:
+    261	    00BB  8A 97	0306r		       MOV DL, MYBUF[BX]
+    262	    00BF  3A D9			       CMP BL, CL
+    263	    00C1  7D 56	90 90		       JGE GET_OUT
+    264
+    265	    00C5  80 FA	20		       CMP DL, ' '
+    266	    00C8  74 32	90 90		       JE NEW_WORD
+    267
+    268	    00CC  80 FA	21		       CMP DL, '!' ; SIGN OF INPUT END
+    269	    00CF  74 55	90 90		       JE OUT_OF_INPUT
+    270
+    271					       ;ESI - INDEX OF ARRAY, EDI - INDEX OF CHAR
+    272	    00D3  66| 8B 36 02F2r	       MOV ESI,	COUNTER_STR_ARR
+    273
+    274	    00D8  66| 50		       PUSH EAX
+    275	    00DA  66| 52		       PUSH EDX
+    276	    00DC  66| A1 02EEr		       MOV EAX,	WORD_LEN
+    277	    00E0  66| 8B 36 02F2r	       MOV ESI,	COUNTER_STR_ARR
+    278	    00E5  66| F7 E6		       MUL ESI
+    279	    00E8  66| 8B F0		       MOV ESI,	EAX
+    280	    00EB  66| 5A		       POP EDX
+    281	    00ED  66| 58		       POP EAX
+    282
+    283	    00EF  66| 03 F7		       ADD ESI,	EDI
+    284	    00F2  88 94	0000r		       MOV STR_ARR[SI],	DL ;áÄèàëÄíú ëàåÇéã
+    285	    00F6  66| 47		       INC EDI
+Turbo Assembler	 Version 2.51	     04/20/21 00:09:40	    Page 6
 mlab1.asm
 
 
 
-    285					 ;   SHL EBX, 7	   ; ÇõÑÇàÉÄÖå áçÄóÖçàÖ	éèÖêÄñàà Ç èéáàñàû Z7
-    286					 ;   CMP EBX, 0
-    287					 ;   JE	WRITE_0_Z7
-    288					 ;   WRITE_1_Z7:
-    289					 ;   OR	EAX, EBX  ; áÄçÖëÖçàÖ êÖáìãúíÄíÄ EBX Ç EAX
-    290					 ;   JMP CNT
-    291					 ;   WRITE_0_Z7:
-    292					 ;   OR	EBX, 10000000b	; ëíÄÇàå Ç EBX çÄ 7 Åàí	ÖÑàçàñì
-    293					 ;   NOT EBX
-    294					 ;   AND EAX, EBX ; áÄçÖëÖçàÖ êÖáìãúíÄíÄ EBX Ç EAX
-    295					 ;
-    296					 ;   CNT:
-    297					 ;
-    298					 ;   ;----------------------------------------
-    299					 ;   ; àáåÖçÖçàÖ 2 ÅàíÄ
-    300					 ;   MOV EBX, EAX
-    301					 ;   AND EBX, 100b  ; ¨†·™† 2 °®‚†
-    302					 ;   SHR EBX, 2	   ; Ç EBX áçÄóÖçàÖ ÅàíÄ Z2
-    303					 ;
-    304					 ;   MOV ECX, EAX
-    305					 ;   AND ECX, 10000000000000000000b   ;	¨†·™† 19 °®‚†
-    306					 ;   SHR ECX, 19   ; Ç ECX áçÄóÖçàÖ ÅàíÄ Z19
-    307					 ;
-    308					 ;   OR	EBX, ECX  ; ÇõóàëãÖçàÖ Z2|=Z19
-    309					 ;   SHL EBX, 2	   ; ÇõÑÇàÉÄÖå áçÄóÖçàÖ	éèÖêÄñàà Ç èéáàñàû Z2
-    310					 ;   OR	EAX, EBX  ; áÄçÖëÖçàÖ êÖáìãúíÄíÄ EBX Ç EAX
-    311					 ;
-    312					 ;
-    313					 ;   MOV Z, EAX
-    314					 ;
-    315					 ;   XOR ECX, ECX
-    316					 ;   XOR EDX, EDX
-    317					 ;   LEA ESI, Z_AFTER_DEC
-    318					 ;   CALL PUTSS
-    319					 ;   MOV EAX, Z
-    320					 ;   CALL PRINT_DEC
-    321					 ;   PUTL EMPTYS
-    322					 ;   PUTL EMPTYS
-    323					 ;
-    324					 ;
-    325					 ;   XOR ECX, ECX
-    326					 ;   XOR EDX, EDX
-    327					 ;   LEA ESI, Z_AFTER_BIN
-    328					 ;   CALL PUTSS
-    329					 ;   MOV EAX, Z
-    330					 ;   CALL PRINT_BIN
-    331					 ;   PUTL EMPTYS
-    332					 ;   PUTL EMPTYS
-    333					 ;
-    334					 ;
-    335					 ; JMP @@E
-    336					 ;
-    337					 ; ERROR_NUM:
-    338					 ;   PUTL EMPTYS
-    339					 ;   LEA ESI, ERROR_NUM_STR
-    340					 ;   XOR EAX, EAX
-    341					 ;   XOR EDX, EDX
-Turbo Assembler	 Version 2.51	     04/18/21 24:33:49	    Page 7
+    286
+    287	    00F8			       INCREAMENTING:
+    288	    00F8  66| 43			 INC EBX
+    289	    00FA  EB BF				 JMP TREAT_CHAR
+    290
+    291	    00FC			       NEW_WORD:
+    292	    00FC  66| 8B 3E 02FEr		 MOV EDI, MAX_STR_ARR
+    293	    0101  66| 8B 36 02F2r		 MOV ESI, COUNTER_STR_ARR
+    294	    0106  66| 3B F7			 CMP ESI, EDI
+    295	    0109  7D 0E	90 90			 JGE GET_OUT
+    296	    010D  66| 46			 INC ESI
+    297	    010F  66| 89 36 02F2r		 MOV COUNTER_STR_ARR, ESI
+    298
+    299	    0114  66| 33 FF			 XOR EDI, EDI
+    300	    0117  EB DF				 JMP INCREAMENTING
+    301
+    302	    0119			     GET_OUT:
+    303	    0119  66| 8B 36 02F2r	     MOV ESI, COUNTER_STR_ARR
+    304	    011E  66| 46		     INC ESI
+    305	    0120  66| 89 36 02F2r	     MOV COUNTER_STR_ARR, ESI
+    306	    0125  C3			     RET
+    307
+    308	    0126			     OUT_OF_INPUT:
+    309	    0126  66| 8B 36 02F2r	     MOV ESI, COUNTER_STR_ARR
+    310	    012B  66| 46		     INC ESI
+    311	    012D  66| 89 36 02F2r	     MOV COUNTER_STR_ARR, ESI
+    312	    0132  E9 FF0F		     JMP OUTPUT
+    313
+    314	    0135			   TREAT_STR  ENDP
+    315
+    316
+    317	    0135			   PRINT_HEX_COUNTER PROC NEAR ; EAX - NUMBER TO CONVERT
+    318	    0135  66| 33 D2		      xor edx, edx
+    319	    0138  66| 33 C9		      xor ecx, ecx
+    320	    013B  66| BB 00000010	      mov ebx, 16
+    321	    0141			      parse:
+    322	    0141  66| F7 F3			  div ebx
+    323	    0144  66| 52			  push edx
+    324	    0146  66| 41			  inc ecx
+    325	    0148  66| 83 F8 00			  cmp eax, 0
+    326	    014C  7F F3				  jg parse
+    327	    014E			      print_hex:
+    328	    014E  66| 58			  pop eax
+    329	    0150  66| 83 C0 30			  add eax, 48
+    330	    0154  E8 0000e			  CALL PUTC
+    331	    0157  E2 F5				  loop print_hex
+    332	    0159  C3			     ret
+    333	    015A			   PRINT_HEX_COUNTER ENDP
+    334					  ;¢¢Æ§	Á®·´† ï
+    335					 ;   PUTL	 EMPTYS
+    336					 ;   LEA ESI, INPUT_X_STR
+    337					 ;   CALL PUTSS
+    338					 ;
+    339					 ;   ;ß†Ø®·†‚Ï EAX ¢ X Ø•‡•¨•≠≠„Ó
+    340					 ;   LEA EDI, X
+    341					 ;   CALL READ_NUM
+    342					 ;   PUTL EMPTYS
+Turbo Assembler	 Version 2.51	     04/20/21 00:09:40	    Page 7
 mlab1.asm
 
 
 
-    342					 ;   XOR ECX, ECX
-    343					 ;   CALL PUTSS
-    344					 ;   JMP @@E
-    345					 ;
-    346					 ; ; RESULT IN EAX , STRING WITH BINARY	NUMBER IN MYBUFF
-    347					 ; READ_NUM PROC NEAR
-    348					 ;   LEA EDX, [MYBUF]
-    349					 ;   CALL GETS
-    350					 ;   xor eax, eax
-    351					 ;   xor ebx, ebx
-    352					 ;   ADD EDX, 1
-    353					 ;   MOV CL, [EDX]
-    354					 ;   ADD EDX, 1
-    355					 ;   l1:
-    356					 ;	mov bl,	[EDX]
-    357					 ;	sub bl,	48
-    358					 ;	CMP BL,	0
-    359					 ;	JE CONTINUE
-    360					 ;	CMP BL,	1
-    361					 ;	JNE ERROR_NUM
-    362					 ;	CONTINUE:
-    363					 ;	  add EAX, EBX
-    364					 ;	  shl EAX, 1
-    365					 ;	  inc EDX
-    366					 ;	 LOOP L1
-    367					 ;   shr EAX,1
-    368					 ; ; PUT EAX VALUE INTO	VARIABLE WITH EDI ADDRESS
-    369					 ;   MOV [EDI],	EAX
-    370					 ;   RET
-    371					 ; READ_NUM ENDP
+    343					 ;   ; ÇõÇéÑ Ç 10 óçéâ ÇàÑÖ óàëãÄ
+    344					 ;   MOV EAX, X
+    345					 ;   CALL PRINT_DEC
+    346					 ;   PUTL EMPTYS
+    347					 ;
+    348					 ;   ;¢¢Æ§ Á®·´† ì
+    349					 ;   ; XOR EDI,	EDI
+    350					 ;   LEA ESI, INPUT_Y_STR
+    351					 ;   CALL PUTSS
+    352					 ;  ;ß†Ø®·†‚Ï EAX ¢ ì Ø•‡•¨•≠≠„Ó
+    353					 ;   LEA EDI, Y
+    354					 ;   CALL READ_NUM
+    355					 ;   PUTL EMPTYS
+    356					 ;
+    357					 ;   ; ÇõÇéÑ Ç 10 óçéâ ÇàÑÖ óàëãÄ
+    358					 ;   MOV EAX, Y
+    359					 ;   CALL PRINT_DEC
+    360					 ;   PUTL EMPTYS
+    361					 ;
+    362					 ;   LEA ESI, FUNCTION
+    363					 ;   CALL PUTSS
+    364					 ;   LEA ESI, Z_STR
+    365					 ;   CALL PUTSS
+    366					 ;   LEA ESI, Z3
+    367					 ;   CALL PUTSS
+    368					 ;   LEA ESI, Z2
+    369					 ;   CALL PUTSS
+    370					 ;   LEA ESI, Z7
+    371					 ;   CALL PUTSS
     372					 ;
-    373					 ; ; WRITE DEC NUMBER FROM EAX
-    374					 ; PRINT_DEC PROC NEAR
-    375					 ;   ; PUSH EAX
-    376					 ;   ; PUTL EMPTYS
-    377					 ;   ; POP EAX
-    378					 ;   MOV EBX, 10
-    379					 ;   XOR ECX, ECX
-    380					 ;   DIVISION:
-    381					 ;     XOR EDX,	EDX
-    382					 ;     DIV EBX
-    383					 ;     ADD EDX,	48
-    384					 ;     push EDX
-    385					 ;     ADD ECX,	1
-    386					 ;     CMP EAX,	0
-    387					 ;     JG DIVISION
-    388					 ;   PRINT:
-    389					 ;     XOR EAX,	EAX
-    390					 ;     POP EAX
-    391					 ;     CALL PUTC
-    392					 ;     LOOP PRINT
-    393					 ;     RET
-    394					 ;   PRINT_DEC ENDP
-    395					 ;
-    396					 ;   ; WRITE DEC NUMBER	FROM EAX
-    397					 ;   PRINT_BIN PROC NEAR
-    398					 ;     ; PUSH EAX
-Turbo Assembler	 Version 2.51	     04/18/21 24:33:49	    Page 8
+    373					 ;   ;-------------------------------------------------
+    374					 ;   ; ≠†Á†´Æ ØÆ§·Á•‚†
+    375					 ;   ; °•‡•¨ Â1-Â4 °®‚Î
+    376					 ;   MOV EAX, X
+    377					 ;   AND EAX, 11110b ;¨†·™† ≠† Â1-Â4 °®‚†
+    378					 ;
+    379					 ;   ;ëêÄÇçàíú ï1-ï4 ÅàíÄ çÄ ëééíÇÖíëíÇàÖ ãÜà àá íÄÅãàóçõï
+    380					 ;   CMP EAX, 100b
+    381					 ;   JE	FALSE
+    382					 ;   CMP EAX, 1100b
+    383					 ;   JE	FALSE
+    384					 ;   CMP EAX, 10b
+    385					 ;   JE	FALSE
+    386					 ;   CMP EAX, 10010b
+    387					 ;   JE	FALSE
+    388					 ;   CMP EAX, 110b
+    389					 ;   JE	FALSE
+    390					 ;   ; àçÄóÖ èêõÜéä çÄ ÇõéèãÖçàÖ Öëãà áçÄóÖçàÖ àëíàçÄ àá íÄÅàãñõ
+    391					 ;   JMP TRUE
+    392					 ;
+    393					 ; ; ¢ÎÁ®·´•≠®•	Z •·´® ®·‚®≠≠† ®´® ´Æ¶Ï	·ÆÆ‚¢•‚·‚¢•≠≠Æ
+    394					 ; TRUE:
+    395					 ;   LEA ESI, F1
+    396					 ;   CALL PUTSS
+    397					 ;   MOV EAX, X
+    398					 ;   SHR EAX, 2
+    399					 ;   MOV EBX, Y
+Turbo Assembler	 Version 2.51	     04/20/21 00:09:40	    Page 8
 mlab1.asm
 
 
 
-    399					 ;     ; PUTL EMPTYS
-    400					 ;     ; POP EAX
-    401					 ;     MOV EBX,	2
-    402					 ;     XOR ECX,	ECX
-    403					 ;     DIVISION_BIN:
-    404					 ;	 XOR EDX, EDX
-    405					 ;	 DIV EBX
-    406					 ;	 ADD EDX, 48
-    407					 ;	 push EDX
-    408					 ;	 ADD ECX, 1
-    409					 ;	 CMP EAX, 0
-    410					 ;	 JG DIVISION_BIN
-    411					 ;     MOV EBX,	ECX
-    412					 ;     SUB EBX,	20
-    413					 ;     PRINT_ZEROS:
-    414					 ;	 MOV AL, '0'
-    415					 ;	 CALL PUTC
-    416					 ;	 INC EBX
-    417					 ;	 CMP EBX, 0
-    418					 ;	 JL PRINT_ZEROS
-    419					 ;     PRINT_B:
-    420					 ;	 XOR EAX, EAX
-    421					 ;	 POP EAX
-    422					 ;	 CALL PUTC
-    423					 ;	 LOOP PRINT_B
-    424					 ;	 RET
-    425					 ;     PRINT_BIN ENDP
-    426
-    427						 ; ÇÎÂÆ§ ®ß Ø‡Æ£‡†¨¨Î
-    428	    0019			 @@E:	 EXIT
-1   429	    0019  B4 4C				 MOV	 AH, FUEXIT
-1   430	    001B  B0 00				 MOV	 AL, 0
-1   431	    001D  CD 21				 INT	 DOSFU
-    432						 EXTRN	 PUTSS:	 NEAR
-    433						 EXTRN	 PUTC:	 NEAR
-    434						 EXTRN	 GETCH:	 NEAR
-    435						 EXTRN	 GETS:	 NEAR
-    436						 EXTRN	 SLEN:	 NEAR
-    437						 EXTRN	 UTOA10: NEAR
-    438						 END	 BEGIN
-Turbo Assembler	 Version 2.51	     04/18/21 24:33:49	    Page 9
+    400					 ;   SHL EBX, 2
+    401					 ;   ADD EAX, EBX
+    402					 ;   MOV Z, EAX
+    403					 ;   JMP CHANGE_Z
+    404					 ; FALSE:
+    405					 ;   LEA ESI, F0
+    406					 ;   CALL PUTSS
+    407					 ;   MOV EAX, X
+    408					 ;   SHR EAX, 3
+    409					 ;   MOV EBX, Y
+    410					 ;   SUB EAX, EBX
+    411					 ;   MOV Z, EAX
+    412					 ;
+    413					 ;
+    414					 ;
+    415					 ; CHANGE_Z:
+    416					 ;   XOR ECX, ECX
+    417					 ;   XOR EDX, EDX
+    418					 ;   LEA ESI, Z_BEFORE_DEC
+    419					 ;   CALL PUTSS
+    420					 ;   MOV EAX, Z
+    421					 ;   CALL PRINT_DEC
+    422					 ;   PUTL EMPTYS
+    423					 ;   PUTL EMPTYS
+    424					 ;
+    425					 ;   XOR ECX, ECX
+    426					 ;   XOR EDX, EDX
+    427					 ;   LEA ESI, Z_BEFORE_BIN
+    428					 ;   CALL PUTSS
+    429					 ;   MOV EAX, Z
+    430					 ;   CALL PRINT_BIN
+    431					 ;   PUTL EMPTYS
+    432					 ;   PUTL EMPTYS
+    433					 ;
+    434					 ;
+    435					 ;
+    436					 ;   ; àáåÖçÖçàÖ 3 ÅàíÄ
+    437					 ;   MOV EAX, Z
+    438					 ;   XOR EAX, 1000b ; àçÇÖêëàü 3 ÅàíÄ
+    439					 ;
+    440					 ;   ;----------------------------------------
+    441					 ;   ;àáåÖçÖçàÖ	7 ÅàíÄ
+    442					 ;
+    443					 ;   MOV EBX, EAX
+    444					 ;   AND EBX, 10000000b	   ; åÄëäÄ 7 ÅàíÄ
+    445					 ;   SHR EBX, 7	   ; Ç EBX áçÄóÖçàÖ ÅàíÄ Z7
+    446					 ;
+    447					 ;   MOV ECX, EAX
+    448					 ;   AND ECX, 100000000b    ; åÄëäÄ 8 ÅàíÄ
+    449					 ;   SHR ECX, 8	   ; Ç EBX áçÄóÖçàÖ ÅàíÄ Z8
+    450					 ;
+    451					 ;   AND EBX, ECX  ; ÇõóàëãÖçàÖ	Z7&=Z8
+    452					 ;   SHL EBX, 7	   ; ÇõÑÇàÉÄÖå áçÄóÖçàÖ	éèÖêÄñàà Ç èéáàñàû Z7
+    453					 ;   CMP EBX, 0
+    454					 ;   JE	WRITE_0_Z7
+    455					 ;   WRITE_1_Z7:
+    456					 ;   OR	EAX, EBX  ; áÄçÖëÖçàÖ êÖáìãúíÄíÄ EBX Ç EAX
+Turbo Assembler	 Version 2.51	     04/20/21 00:09:40	    Page 9
+mlab1.asm
+
+
+
+    457					 ;   JMP CNT
+    458					 ;   WRITE_0_Z7:
+    459					 ;   OR	EBX, 10000000b	; ëíÄÇàå Ç EBX çÄ 7 Åàí	ÖÑàçàñì
+    460					 ;   NOT EBX
+    461					 ;   AND EAX, EBX ; áÄçÖëÖçàÖ êÖáìãúíÄíÄ EBX Ç EAX
+    462					 ;
+    463					 ;   CNT:
+    464					 ;
+    465					 ;   ;----------------------------------------
+    466					 ;   ; àáåÖçÖçàÖ 2 ÅàíÄ
+    467					 ;   MOV EBX, EAX
+    468					 ;   AND EBX, 100b  ; ¨†·™† 2 °®‚†
+    469					 ;   SHR EBX, 2	   ; Ç EBX áçÄóÖçàÖ ÅàíÄ Z2
+    470					 ;
+    471					 ;   MOV ECX, EAX
+    472					 ;   AND ECX, 10000000000000000000b   ;	¨†·™† 19 °®‚†
+    473					 ;   SHR ECX, 19   ; Ç ECX áçÄóÖçàÖ ÅàíÄ Z19
+    474					 ;
+    475					 ;   OR	EBX, ECX  ; ÇõóàëãÖçàÖ Z2|=Z19
+    476					 ;   SHL EBX, 2	   ; ÇõÑÇàÉÄÖå áçÄóÖçàÖ	éèÖêÄñàà Ç èéáàñàû Z2
+    477					 ;   OR	EAX, EBX  ; áÄçÖëÖçàÖ êÖáìãúíÄíÄ EBX Ç EAX
+    478					 ;
+    479					 ;
+    480					 ;   MOV Z, EAX
+    481					 ;
+    482					 ;   XOR ECX, ECX
+    483					 ;   XOR EDX, EDX
+    484					 ;   LEA ESI, Z_AFTER_DEC
+    485					 ;   CALL PUTSS
+    486					 ;   MOV EAX, Z
+    487					 ;   CALL PRINT_DEC
+    488					 ;   PUTL EMPTYS
+    489					 ;   PUTL EMPTYS
+    490					 ;
+    491					 ;
+    492					 ;   XOR ECX, ECX
+    493					 ;   XOR EDX, EDX
+    494					 ;   LEA ESI, Z_AFTER_BIN
+    495					 ;   CALL PUTSS
+    496					 ;   MOV EAX, Z
+    497					 ;   CALL PRINT_BIN
+    498					 ;   PUTL EMPTYS
+    499					 ;   PUTL EMPTYS
+    500					 ;
+    501					 ;
+    502					 ; JMP @@E
+    503					 ;
+    504					 ; ERROR_NUM:
+    505					 ;   PUTL EMPTYS
+    506					 ;   LEA ESI, ERROR_NUM_STR
+    507					 ;   XOR EAX, EAX
+    508					 ;   XOR EDX, EDX
+    509					 ;   XOR ECX, ECX
+    510					 ;   CALL PUTSS
+    511					 ;   JMP @@E
+    512					 ;
+    513					 ; ; RESULT IN EAX , STRING WITH BINARY	NUMBER IN MYBUFF
+Turbo Assembler	 Version 2.51	     04/20/21 00:09:40	    Page 10
+mlab1.asm
+
+
+
+    514					 ; READ_NUM PROC NEAR
+    515					 ;   LEA EDX, [MYBUF]
+    516					 ;   CALL GETS
+    517					 ;   xor eax, eax
+    518					 ;   xor ebx, ebx
+    519					 ;   ADD EDX, 1
+    520					 ;   MOV CL, [EDX]
+    521					 ;   ADD EDX, 1
+    522					 ;   l1:
+    523					 ;	mov bl,	[EDX]
+    524					 ;	sub bl,	48
+    525					 ;	CMP BL,	0
+    526					 ;	JE CONTINUE
+    527					 ;	CMP BL,	1
+    528					 ;	JNE ERROR_NUM
+    529					 ;	CONTINUE:
+    530					 ;	  add EAX, EBX
+    531					 ;	  shl EAX, 1
+    532					 ;	  inc EDX
+    533					 ;	 LOOP L1
+    534					 ;   shr EAX,1
+    535					 ; ; PUT EAX VALUE INTO	VARIABLE WITH EDI ADDRESS
+    536					 ;   MOV [EDI],	EAX
+    537					 ;   RET
+    538					 ; READ_NUM ENDP
+    539					 ;
+    540					 ; ; WRITE DEC NUMBER FROM EAX
+    541					 ; PRINT_DEC PROC NEAR
+    542					 ;   ; PUSH EAX
+    543					 ;   ; PUTL EMPTYS
+    544					 ;   ; POP EAX
+    545					 ;   MOV EBX, 10
+    546					 ;   XOR ECX, ECX
+    547					 ;   DIVISION:
+    548					 ;     XOR EDX,	EDX
+    549					 ;     DIV EBX
+    550					 ;     ADD EDX,	48
+    551					 ;     push EDX
+    552					 ;     ADD ECX,	1
+    553					 ;     CMP EAX,	0
+    554					 ;     JG DIVISION
+    555					 ;   PRINT:
+    556					 ;     XOR EAX,	EAX
+    557					 ;     POP EAX
+    558					 ;     CALL PUTC
+    559					 ;     LOOP PRINT
+    560					 ;     RET
+    561					 ;   PRINT_DEC ENDP
+    562					 ;
+    563					 ;   ; WRITE DEC NUMBER	FROM EAX
+    564					 ;   PRINT_BIN PROC NEAR
+    565					 ;     ; PUSH EAX
+    566					 ;     ; PUTL EMPTYS
+    567					 ;     ; POP EAX
+    568					 ;     MOV EBX,	2
+    569					 ;     XOR ECX,	ECX
+    570					 ;     DIVISION_BIN:
+Turbo Assembler	 Version 2.51	     04/20/21 00:09:40	    Page 11
+mlab1.asm
+
+
+
+    571					 ;	 XOR EDX, EDX
+    572					 ;	 DIV EBX
+    573					 ;	 ADD EDX, 48
+    574					 ;	 push EDX
+    575					 ;	 ADD ECX, 1
+    576					 ;	 CMP EAX, 0
+    577					 ;	 JG DIVISION_BIN
+    578					 ;     MOV EBX,	ECX
+    579					 ;     SUB EBX,	20
+    580					 ;     PRINT_ZEROS:
+    581					 ;	 MOV AL, '0'
+    582					 ;	 CALL PUTC
+    583					 ;	 INC EBX
+    584					 ;	 CMP EBX, 0
+    585					 ;	 JL PRINT_ZEROS
+    586					 ;     PRINT_B:
+    587					 ;	 XOR EAX, EAX
+    588					 ;	 POP EAX
+    589					 ;	 CALL PUTC
+    590					 ;	 LOOP PRINT_B
+    591					 ;	 RET
+    592					 ;     PRINT_BIN ENDP
+    593
+    594						 ; ÇÎÂÆ§ ®ß Ø‡Æ£‡†¨¨Î
+    595	    015A			 @@E:	 EXIT
+1   596	    015A  B4 4C				 MOV	 AH, FUEXIT
+1   597	    015C  B0 00				 MOV	 AL, 0
+1   598	    015E  CD 21				 INT	 DOSFU
+    599						 EXTRN	 PUTSS:	 NEAR
+    600						 EXTRN	 PUTC:	 NEAR
+    601						 EXTRN	 GETCH:	 NEAR
+    602						 EXTRN	 GETS:	 NEAR
+    603						 EXTRN	 SLEN:	 NEAR
+    604						 EXTRN	 UTOA10: NEAR
+    605						 END	 BEGIN
+Turbo Assembler	 Version 2.51	     04/20/21 00:09:40	    Page 12
 Symbol Table
 
 
@@ -485,11 +666,11 @@ Symbol Table
 
 Symbol Name			  Type	 Value
 
-??DATE				  Text	 "04/18/21"
+??DATE				  Text	 "04/20/21"
 ??FILENAME			  Text	 "mlab1	  "
-??TIME				  Text	 "24:33:49"
+??TIME				  Text	 "00:09:40"
 ??VERSION			  Number 0205
-@@E				  Near	 _TEXT:0019
+@@E				  Near	 _TEXT:015A
 @CODE				  Text	 _TEXT
 @CODESIZE			  Text	 0
 @CPU				  Text	 0D0FH
@@ -499,33 +680,55 @@ Symbol Name			  Type	 Value
 @FILENAME			  Text	 MLAB1
 @MODEL				  Text	 2
 @WORDSIZE			  Text	 2
-A				  Byte	 DGROUP:02F7
-B				  Byte	 DGROUP:02FC
+A				  Byte	 DGROUP:0307
+B				  Byte	 DGROUP:030C
 BEGIN				  Near	 _TEXT:0000
 CHCOMMA				  Number 0060
 CHCR				  Number 000D
 CHESC				  Number 001B
 CHLF				  Number 000A
 CHSEP				  Number 003D
-COUNTER				  Dword	 DGROUP:02F2
+COUNTER_4_OUT			  Dword	 DGROUP:02FA
+COUNTER_LINE			  Dword	 DGROUP:02F6
+COUNTER_STR_ARR			  Dword	 DGROUP:02F2
 DOSFU				  Number 0021
-EMPTYS				  Byte	 DGROUP:0342
+EM				  Byte	 DGROUP:0353
+EMPTYS				  Byte	 DGROUP:0352
 FUEXIT				  Number 004C
 FUGETCH				  Number 0008
 FUGETS				  Number 000A
 FUPUTC				  Number 0002
 GETCH				  Near	 _TEXT:---- Extern
 GETS				  Near	 _TEXT:---- Extern
+GET_OUT				  Near	 _TEXT:0119
+INCREAMENTING			  Near	 _TEXT:00F8
+INPUT				  Byte	 DGROUP:03D3
 LENNUM				  Number 0012
 LENPACK				  Number 0009
-MYBUF				  Byte	 DGROUP:02F6
+MAX_STR				  Dword	 DGROUP:0302
+MAX_STR_ARR			  Dword	 DGROUP:02FE
+MYBUF				  Byte	 DGROUP:0306
+NEW_WORD			  Near	 _TEXT:00FC
+OUTPUT				  Near	 _TEXT:0044
+OUT_OF_INPUT			  Near	 _TEXT:0126
+PARSE				  Near	 _TEXT:0141
 PAUSE_H				  Number 0000
 PAUSE_L				  Number 0000
+PRINT_ARR			  Near	 _TEXT:0054
+PRINT_HEX			  Near	 _TEXT:014E
+PRINT_HEX_COUNTER		  Near	 _TEXT:0135
 PUTC				  Near	 _TEXT:---- Extern
 PUTSS				  Near	 _TEXT:---- Extern
 SLEN				  Near	 _TEXT:---- Extern
+Turbo Assembler	 Version 2.51	     04/20/21 00:09:40	    Page 13
+Symbol Table
+
+
+
 STR_ARR				  Byte	 DGROUP:0000
-TREAT_STR			  Near	 _TEXT:000B
+TREAT_CHAR			  Near	 _TEXT:00BB
+TREAT_LINE			  Near	 _TEXT:0005
+TREAT_STR			  Near	 _TEXT:00A0
 UTOA10				  Near	 _TEXT:---- Extern
 WORD_LEN			  Dword	 DGROUP:02EE
 
@@ -537,22 +740,11 @@ FIXTIME
 PUTL
 PUTLS
 PUTLSC
-Turbo Assembler	 Version 2.51	     04/18/21 24:33:49	    Page 10
-Symbol Table
-
-
-
 
 Groups & Segments		  Bit Size Align  Combine Class
 
 DGROUP				  Group
   STACK				  16  0200 Para	  Stack	  STACK
-  _DATA				  16  0343 Word	  Public  DATA
-_TEXT				  16  001F Word	  Public  CODE
-Turbo Assembler	 Version 2.51	     04/18/21 24:33:49	    Page 11
-Error Summary
-
-
-
-**Error** mlab1.asm(30)	Operand	types do not match
+  _DATA				  16  03EE Word	  Public  DATA
+_TEXT				  16  0160 Word	  Public  CODE
 
