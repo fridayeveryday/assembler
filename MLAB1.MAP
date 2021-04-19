@@ -1,29 +1,29 @@
 
  Start  Stop   Length Name               Class
 
- 00000H 0022EH 0022FH _TEXT              CODE
- 00230H 0062FH 00400H _DATA              DATA
- 00630H 0082FH 00200H STACK              STACK
+ 00000H 00240H 00241H _TEXT              CODE
+ 00250H 0064FH 00400H _DATA              DATA
+ 00650H 0084FH 00200H STACK              STACK
 
   Address         Publics by Name
 
- 0000:022A       DILAY
- 0000:018B       GETCH
- 0000:0190       GETS
- 0000:0182       PUTC
- 0000:0160       PUTSS
- 0000:01A4       SLEN
- 0000:01B9       UTOA10
+ 0000:023C       DILAY
+ 0000:019D       GETCH
+ 0000:01A2       GETS
+ 0000:0194       PUTC
+ 0000:0172       PUTSS
+ 0000:01B6       SLEN
+ 0000:01CB       UTOA10
 
   Address         Publics by Value
 
- 0000:0160       PUTSS
- 0000:0182       PUTC
- 0000:018B       GETCH
- 0000:0190       GETS
- 0000:01A4       SLEN
- 0000:01B9       UTOA10
- 0000:022A       DILAY
+ 0000:0172       PUTSS
+ 0000:0194       PUTC
+ 0000:019D       GETCH
+ 0000:01A2       GETS
+ 0000:01B6       SLEN
+ 0000:01CB       UTOA10
+ 0000:023C       DILAY
 
 Program entry point at 0000:0000
 

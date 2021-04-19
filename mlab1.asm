@@ -214,6 +214,7 @@ INPUT DB 'HELLO WORLD MY DEAR FREIND', 0
      xor ecx, ecx
      mov ebx, 16
      parse:
+         xor edx, edx
          div ebx
          push edx
          inc ecx
@@ -221,7 +222,15 @@ INPUT DB 'HELLO WORLD MY DEAR FREIND', 0
          jg parse
      print_hex:
          pop eax
+         cmp eax, 10
+         jge isLetter
          add eax, 48
+         jmp print_hex_char
+
+         isLetter:
+         add eax, 55
+
+         print_hex_char:
          CALL PUTC
          loop print_hex
     ret

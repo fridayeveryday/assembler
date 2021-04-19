@@ -1,4 +1,4 @@
-Turbo Assembler	 Version 2.51	     04/20/21 00:09:41	    Page 1
+Turbo Assembler	 Version 2.51	     04/20/21 00:31:01	    Page 1
 mlab1l.asm
 
 
@@ -60,7 +60,7 @@ mlab1l.asm
      55	    0021  C3			 @@R:	 RET
      56	    0022			 PUTSS	 ENDP
      57
-Turbo Assembler	 Version 2.51	     04/20/21 00:09:41	    Page 2
+Turbo Assembler	 Version 2.51	     04/20/21 00:31:01	    Page 2
 mlab1l.asm
 
 
@@ -122,7 +122,7 @@ mlab1l.asm
     112	    0055  46				 INC	 SI
     113	    0056  EB EE				 JMP	 SHORT	 LSLEN
     114	    0058  C3			 RSLEN:	 RET
-Turbo Assembler	 Version 2.51	     04/20/21 00:09:41	    Page 3
+Turbo Assembler	 Version 2.51	     04/20/21 00:31:01	    Page 3
 mlab1l.asm
 
 
@@ -184,7 +184,7 @@ mlab1l.asm
     169						 ;   сначала подсчитываем
     170	    00AE  80 3C	30		 @@L2:	 CMP	 BYTE PTR [SI],	'0'
     171	    00B1  74 09	90 90			 JE	 @@N
-Turbo Assembler	 Version 2.51	     04/20/21 00:09:41	    Page 4
+Turbo Assembler	 Version 2.51	     04/20/21 00:31:01	    Page 4
 mlab1l.asm
 
 
@@ -216,7 +216,7 @@ mlab1l.asm
     196						 PUBLIC	 PUTSS,	PUTC, GETCH, GETS, DILAY, SLEN,	UTOA10
     197
     198						 END
-Turbo Assembler	 Version 2.51	     04/20/21 00:09:41	    Page 5
+Turbo Assembler	 Version 2.51	     04/20/21 00:31:01	    Page 5
 Symbol Table
 
 
@@ -226,7 +226,7 @@ Symbol Name			  Type	 Value
 
 ??DATE				  Text	 "04/20/21"
 ??FILENAME			  Text	 "mlab1l  "
-??TIME				  Text	 "00:09:40"
+??TIME				  Text	 "00:31:01"
 ??VERSION			  Number 0205
 @@E				  Near	 _TEXT:0017
 @@E				  Near	 _TEXT:00AA
