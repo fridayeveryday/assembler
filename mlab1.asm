@@ -24,7 +24,7 @@ A DB 'ABCD', 0
 B DB 70 DUP (0)
 EMPTYS	DB	0
 EM db 128 dup(0)
-INPUT DB 'HELLO WORLD MY DEAR FREIND', 0
+INPUT DB 'PLEASE INPUT 10 STRINGS OF WORDS:', 0
 ;========================= Программа =========================
         .CODE
         BEGIN	LABEL	NEAR
@@ -32,6 +32,11 @@ INPUT DB 'HELLO WORLD MY DEAR FREIND', 0
 	; инициализация сегментного регистра
 	MOV	AX,	@DATA
 	MOV	DS,	AX
+
+  XOR ECX, ecx
+  XOR EDX, EDX
+  LEA ESI, INPUT
+  CALL PUTSS
 
   TREAT_LINE:
     MOV EAX, COUNTER_LINE
